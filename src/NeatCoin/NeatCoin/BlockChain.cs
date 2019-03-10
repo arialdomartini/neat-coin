@@ -9,9 +9,6 @@ namespace NeatCoin
             _block = block;
         }
 
-        public Block GetLatest()
-        {
-            return _block;
-        }
+        public Block GetLatest() => _block;
     }
 }
