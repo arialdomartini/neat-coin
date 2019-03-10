@@ -63,7 +63,7 @@ namespace NeatCoinTest
             var block = new Block(_cryptography, Now, "some content");
 
             _sut.Push(block);
-            var result = _sut.GetLatest();
+            var result = _sut.Latest;
 
             result.Should().Be(block);
         }
