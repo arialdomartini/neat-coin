@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Security.Cryptography;
 using FluentAssertions;
 using NeatCoin;
+using NeatCoin.Cryptography;
 using Xunit;
 using SHA256 = NeatCoin.Cryptography.SHA256;
 
@@ -13,7 +13,7 @@ namespace NeatCoinTest
 
         public BlockTest()
         {
-            _sha256 = new SHA256(new SHA256Managed());
+            _sha256 = new SHA256();
         }
 
         [Fact]
