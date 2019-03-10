@@ -18,9 +18,9 @@ namespace NeatCoin
             _content = content;
         }
 
-        public string Hash => _cryptography.HashOf(SerializeObject());
+        public string Hash => _cryptography.HashOf(Serialized);
 
-        private string SerializeObject() =>
+        private string Serialized =>
             JsonConvert.SerializeObject(
                 new
                 {
