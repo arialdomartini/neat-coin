@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.XPath;
 using FluentAssertions;
 using NeatCoin;
 using NeatCoin.Cryptography;
@@ -40,6 +41,27 @@ namespace NeatCoinTest
             var hash2 = block2.Hash;
 
             hash1.Should().NotBe(hash2);
+        }
+    }
+
+    public class BlockChainTest
+    {
+        private readonly BlockChain _sut;
+
+        public BlockChainTest()
+        {
+            _sut = new BlockChain();
+        }
+
+        [Fact]
+        public void can_host_a_block()
+        {
+            var block = new Block(new SHA256(), DateTimeOffset.UtcNow, "some content");
+
+            _sut.Push(block);
+            var result = _sut.GetLatest();
+
+            result.Should().Be(block);
         }
     }
 }
