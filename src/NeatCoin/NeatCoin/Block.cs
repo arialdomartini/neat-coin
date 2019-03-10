@@ -1,4 +1,5 @@
 ﻿using System;
+using NeatCoin.Cryptography;
 using Newtonsoft.Json;
 
 namespace NeatCoin
@@ -7,17 +8,17 @@ namespace NeatCoin
     {
         private readonly DateTimeOffset _createdAt;
         private readonly string _content;
-        private readonly Hash _hash;
+        private readonly ICryptography _cryptography;
 
-        internal Block(Hash hash, DateTimeOffset createdAt, string content)
+        internal Block(ICryptography cryptography, DateTimeOffset createdAt, string content)
         {
-            _hash = hash;
+            _cryptography = cryptography;
 
             _createdAt = createdAt;
             _content = content;
         }
 
-        public string Hash => _hash.CalculateHash(SerializeObject());
+        public string Hash => _cryptography.HashOf(SerializeObject());
 
         private string SerializeObject() =>
             JsonConvert.SerializeObject(
