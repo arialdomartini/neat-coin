@@ -11,12 +11,13 @@ namespace NeatCoinTest
         private readonly BlockChain _sut;
         private readonly SHA256 _cryptography;
         private readonly DateTimeOffset _now;
+        private DateTimeOffset Now = DateTimeOffset.UtcNow;
 
         public BlockChainTest()
         {
             _sut = new BlockChain();
             _cryptography = new SHA256();
-            _now = DateTimeOffset.UtcNow;
+            _now = Now;
         }
 
         [Fact]
@@ -50,6 +51,19 @@ namespace NeatCoinTest
             var result = _sut.GetBlockByHash("hash of unknown block");
 
             result.Should().Be(null);
+        }
+
+        [Fact]
+        public void can_contain_more_than_one_block()
+        {
+            var block1 = new Block(_cryptography, Now, "some content");
+            var block2 = new Block(_cryptography, Now, "some content");
+
+            _sut.Push(block1);
+            _sut.Push(block2);
+
+            _sut.GetBlockByHash(block1.Hash).Should().BeEquivalentTo(block1);
+            _sut.GetBlockByHash(block2.Hash).Should().BeEquivalentTo(block2);
         }
     }
 }
