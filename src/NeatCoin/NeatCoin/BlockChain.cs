@@ -10,8 +10,13 @@ namespace NeatCoin
 
         public BlockChain(ICryptography cryptography, int difficulty)
         {
-            _blocks.Add(new GenesisBlock(cryptography, difficulty));
+            var genesisBlock = CreateGenesisBlock(cryptography, difficulty);
+            _blocks.Add(genesisBlock);
         }
+
+        private static Block CreateGenesisBlock(ICryptography cryptography, int difficulty) =>
+            new GenesisBlock(cryptography, difficulty)
+                .Mine();
 
         internal void Push(Block block)
         {

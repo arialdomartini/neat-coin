@@ -89,5 +89,13 @@ namespace NeatCoinTest
         {
             _sut.Last.Parent.Should().Be("0");
         }
+
+        [Fact]
+        public void genesis_block_should_be_valid()
+        {
+            var genesisBlock = _sut.Last;
+
+            genesisBlock.IsValid.Should().Be(true);
+        }
     }
 }
