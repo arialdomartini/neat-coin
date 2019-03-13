@@ -1,11 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using NeatCoin.Cryptography;
 
 namespace NeatCoin
 {
     internal class BlockChain
     {
         private readonly List<Block> _blocks = new List<Block>();
+
+        public BlockChain(ICryptography cryptography)
+        {
+            _blocks.Add(new GenesisBlock(cryptography));
+        }
 
         internal void Push(Block block)
         {

@@ -8,7 +8,7 @@ namespace NeatCoin
     {
         private readonly DateTimeOffset _createdAt;
         private readonly string _content;
-        public string Parent { get; }
+        public string Parent { get; protected set; }
         private readonly ICryptography _cryptography;
 
         internal Block(ICryptography cryptography, DateTimeOffset createdAt, string content, string parent)
