@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using FluentAssertions;
 using NeatCoin;
 using Xunit;
@@ -11,7 +12,7 @@ namespace NeatCoinTest
     {
         private readonly SHA256 _sha256;
         private DateTimeOffset Now = DateTimeOffset.UtcNow;
-        private readonly List<Transaction> _emptyTransactionList = new List<Transaction>();
+        private readonly ImmutableList<Transaction> _emptyTransactionList = ImmutableList.Create<Transaction>();
 
         public BlockTest()
         {
@@ -47,8 +48,8 @@ namespace NeatCoinTest
         [Fact]
         public void blocks_with_different_transactions_should_have_different_hash_values()
         {
-            var transactionList1 = new List<Transaction> { new Transaction()};
-            var transactionList2 = new List<Transaction> { new Transaction(), new Transaction()};
+            var transactionList1 = new List<Transaction> { new Transaction()}.ToImmutableList();
+            var transactionList2 = new List<Transaction> { new Transaction(), new Transaction()}.ToImmutableList();
             var block1 = Block.Create(_sha256, Now, transactionList1, "0", 3);
             var block2 = Block.Create(_sha256, Now, transactionList2, "0", 3);
 
