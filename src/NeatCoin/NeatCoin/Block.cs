@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NeatCoin.Cryptography;
 using Newtonsoft.Json;
 
@@ -7,16 +8,16 @@ namespace NeatCoin
     internal class Block
     {
         private readonly DateTimeOffset _createdAt;
-        private readonly string _content;
-        public string Parent { get; protected set; }
+        private readonly List<Transaction> _transactions;
+        public string Parent { get; }
         private readonly ICryptography _cryptography;
 
-        internal Block(ICryptography cryptography, DateTimeOffset createdAt, string content, string parent)
+        internal Block(ICryptography cryptography, DateTimeOffset createdAt, List<Transaction> transactions, string parent)
         {
             _cryptography = cryptography;
 
             _createdAt = createdAt;
-            _content = content;
+            _transactions = transactions;
             Parent = parent;
         }
 
@@ -27,7 +28,7 @@ namespace NeatCoin
                 new
                 {
                     CreatedAt = _createdAt.AsString(),
-                    Content = _content,
+                    Content = _transactions,
                     Parent
                 });
 
