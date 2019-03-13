@@ -30,5 +30,7 @@ namespace NeatCoin
                     Content = _content,
                     Parent
                 });
+
+        public bool IsChainedTo(Block last) => Parent == last.Hash;
     }
 }

@@ -9,7 +9,13 @@ namespace NeatCoin
 
         internal void Push(Block block)
         {
-            _blocks.Add(block);
+            if (AddingTheGenesis(block) || block.IsChainedTo(Last))
+                _blocks.Add(block);
+        }
+
+        private bool AddingTheGenesis(Block block)
+        {
+            return block.Parent == "0" && Last == null;
         }
 
         public Block Last => _blocks.LastOrDefault();

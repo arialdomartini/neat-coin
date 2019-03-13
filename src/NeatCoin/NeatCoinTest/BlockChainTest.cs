@@ -79,5 +79,18 @@ namespace NeatCoinTest
             var parent = _sut.GetBlockByHash(lastBlock.Parent);
             parent.Hash.Should().Be(block1.Hash);
         }
+
+        [Fact]
+        public void unchained_blocks_cannot_be_added()
+        {
+            var block1 = new Block(_cryptography, Now, "some content", "0");
+            var block2 = new Block(_cryptography, Now, "some content", "not existing parent");
+
+            _sut.Push(block1);
+            _sut.Push(block2);
+
+            var result = _sut.GetBlockByHash(block2.Hash);
+            result.Should().BeNull();
+        }
     }
 }
