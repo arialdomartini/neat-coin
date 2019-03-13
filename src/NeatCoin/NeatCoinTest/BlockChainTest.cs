@@ -23,7 +23,7 @@ namespace NeatCoinTest
         [Fact]
         public void can_host_a_block()
         {
-            var block = new Block(_cryptography, _now, "some content");
+            var block = new Block(_cryptography, _now, "some content", "0");
 
             _sut.Push(block);
             var result = _sut.Last;
@@ -34,7 +34,7 @@ namespace NeatCoinTest
         [Fact]
         public void blocks_can_be_found_given_their_hash()
         {
-            var block = new Block(_cryptography, _now, "some content");
+            var block = new Block(_cryptography, _now, "some content", "0");
             _sut.Push(block);
 
             var result = _sut.GetBlockByHash(block.Hash);
@@ -45,7 +45,7 @@ namespace NeatCoinTest
         [Fact]
         public void should_return_null_if_no_blocks_is_found()
         {
-            var block = new Block(_cryptography, _now, "some content");
+            var block = new Block(_cryptography, _now, "some content", "0");
             _sut.Push(block);
 
             var result = _sut.GetBlockByHash("hash of unknown block");
@@ -56,14 +56,28 @@ namespace NeatCoinTest
         [Fact]
         public void can_contain_more_than_one_block()
         {
-            var block1 = new Block(_cryptography, Now, "some content");
-            var block2 = new Block(_cryptography, Now, "some content");
+            var block1 = new Block(_cryptography, Now, "some content", "0");
+            var block2 = new Block(_cryptography, Now, "some content", block1.Hash);
 
             _sut.Push(block1);
             _sut.Push(block2);
 
             _sut.GetBlockByHash(block1.Hash).Should().BeEquivalentTo(block1);
             _sut.GetBlockByHash(block2.Hash).Should().BeEquivalentTo(block2);
+        }
+
+        [Fact]
+        public void blocks_are_chained()
+        {
+            var block1 = new Block(_cryptography, Now, "some content", "0");
+            var block2 = new Block(_cryptography, Now, "some content", block1.Hash);
+
+            _sut.Push(block1);
+            _sut.Push(block2);
+
+            var lastBlock = _sut.Last;
+            var parent = _sut.GetBlockByHash(lastBlock.Parent);
+            parent.Hash.Should().Be(block1.Hash);
         }
     }
 }

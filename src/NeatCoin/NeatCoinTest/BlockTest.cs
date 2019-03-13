@@ -21,8 +21,8 @@ namespace NeatCoinTest
         public void blocks_created_in_different_moments_should_have_different_hash_values()
         {
             var now = DateTimeOffset.UtcNow;
-            var block1 = new Block(_sha256, now, "same content");
-            var block2 = new Block(_sha256, now.AddMilliseconds(1), "same content");
+            var block1 = new Block(_sha256, now, "same content", "0");
+            var block2 = new Block(_sha256, now.AddMilliseconds(1), "same content", block1.Hash);
 
             var hash1 = block1.Hash;
             var hash2 = block2.Hash;
@@ -34,8 +34,21 @@ namespace NeatCoinTest
         public void blocks_with_different_contents_should_have_different_hash_values()
         {
             var sameMoment = DateTimeOffset.UtcNow;
-            var block1 = new Block(_sha256, sameMoment, "content1");
-            var block2 = new Block(_sha256, sameMoment, "content2");
+            var block1 = new Block(_sha256, sameMoment, "content1", "0");
+            var block2 = new Block(_sha256, sameMoment, "content2", block1.Hash);
+
+            var hash1 = block1.Hash;
+            var hash2 = block2.Hash;
+
+            hash1.Should().NotBe(hash2);
+        }
+
+        [Fact]
+        public void blocks_with_different_parents_should_have_different_hash_values()
+        {
+            var sameMoment = DateTimeOffset.UtcNow;
+            var block1 = new Block(_sha256, sameMoment, "content1", "0");
+            var block2 = new Block(_sha256, sameMoment, "content1", "1");
 
             var hash1 = block1.Hash;
             var hash2 = block2.Hash;

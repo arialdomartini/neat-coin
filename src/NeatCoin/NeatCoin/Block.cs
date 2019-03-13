@@ -8,14 +8,16 @@ namespace NeatCoin
     {
         private readonly DateTimeOffset _createdAt;
         private readonly string _content;
+        public string Parent { get; }
         private readonly ICryptography _cryptography;
 
-        internal Block(ICryptography cryptography, DateTimeOffset createdAt, string content)
+        internal Block(ICryptography cryptography, DateTimeOffset createdAt, string content, string parent)
         {
             _cryptography = cryptography;
 
             _createdAt = createdAt;
             _content = content;
+            Parent = parent;
         }
 
         public string Hash => _cryptography.HashOf(Serialized);
@@ -25,7 +27,8 @@ namespace NeatCoin
                 new
                 {
                     CreatedAt = _createdAt.AsString(),
-                    Content = _content
+                    Content = _content,
+                    Parent
                 });
     }
 }
