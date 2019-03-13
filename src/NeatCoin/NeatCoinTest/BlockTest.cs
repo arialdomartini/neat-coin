@@ -55,5 +55,25 @@ namespace NeatCoinTest
 
             hash1.Should().NotBe(hash2);
         }
+
+        [Fact]
+        public void should_be_valid_if_hash_matches()
+        {
+            var sut = new Block(_sha256, DateTimeOffset.UtcNow, "some content", "some parent");
+
+            var result = sut.IsValid(_sha256.HashOf(sut.Serialized));
+
+            result.Should().Be(true);
+        }
+
+        [Fact]
+        public void should_not_be_valid_if_hash_does_not_match()
+        {
+            var sut = new Block(_sha256, DateTimeOffset.UtcNow, "some content", "some parent");
+
+            var result = sut.IsValid("another hash");
+
+            result.Should().Be(false);
+        }
     }
 }

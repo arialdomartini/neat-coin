@@ -22,7 +22,7 @@ namespace NeatCoin
 
         public string Hash => _cryptography.HashOf(Serialized);
 
-        private string Serialized =>
+        public string Serialized =>
             JsonConvert.SerializeObject(
                 new
                 {
@@ -32,5 +32,7 @@ namespace NeatCoin
                 });
 
         public bool IsChainedTo(Block last) => Parent == last.Hash;
+
+        public bool IsValid(string hash) => Hash == hash;
     }
 }
