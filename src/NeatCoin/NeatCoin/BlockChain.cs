@@ -12,8 +12,8 @@ namespace NeatCoin
             _blocks.Add(block);
         }
 
-        public Block Latest => _blocks.LastOrDefault();
+        public Block Last => _blocks.LastOrDefault();
 
-        public Block GetBlockByHash(string blockHash) => Latest.Hash == blockHash ? Latest : null;
+        public Block GetBlockByHash(string blockHash) => Last.Hash == blockHash ? Last : null;
     }
 }
