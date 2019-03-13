@@ -12,7 +12,7 @@ namespace NeatCoin
         public string Parent { get; }
         private readonly ICryptography _cryptography;
 
-        internal Block(ICryptography cryptography, DateTimeOffset createdAt, List<Transaction> transactions, string parent)
+        protected Block(ICryptography cryptography, DateTimeOffset createdAt, List<Transaction> transactions, string parent)
         {
             _cryptography = cryptography;
 
@@ -20,6 +20,9 @@ namespace NeatCoin
             _transactions = transactions;
             Parent = parent;
         }
+
+        public static Block Create(SHA256 cryptography, DateTimeOffset utcNow, List<Transaction> emptyTransactionList, string parent) =>
+            new Block(cryptography, utcNow, emptyTransactionList, parent);
 
         public string Hash => _cryptography.HashOf(Serialized);
 

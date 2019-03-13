@@ -24,7 +24,7 @@ namespace NeatCoinTest
         public void blocks_can_be_found_given_their_hash()
         {
             var genesisBlock = _sut.Last;
-            var block = new Block(_cryptography, DateTimeOffset.UtcNow, _emptyTransactionList, genesisBlock.Hash);
+            var block = Block.Create(_cryptography, DateTimeOffset.UtcNow, _emptyTransactionList, genesisBlock.Hash);
             _sut.Push(block);
 
             var result = _sut.GetBlockByHash(block.Hash);
@@ -35,7 +35,7 @@ namespace NeatCoinTest
         [Fact]
         public void should_return_null_if_no_blocks_is_found()
         {
-            var block = new Block(_cryptography, DateTimeOffset.UtcNow, _emptyTransactionList, "0");
+            var block = Block.Create(_cryptography, DateTimeOffset.UtcNow, _emptyTransactionList, "0");
             _sut.Push(block);
 
             var result = _sut.GetBlockByHash("hash of unknown block");
@@ -47,8 +47,8 @@ namespace NeatCoinTest
         public void can_contain_more_than_one_block()
         {
             var genesisBlock = _sut.Last;
-            var block2 = new Block(_cryptography, Now, _emptyTransactionList, genesisBlock.Hash);
-            var block3 = new Block(_cryptography, Now, _emptyTransactionList, block2.Hash);
+            var block2 = Block.Create(_cryptography, Now, _emptyTransactionList, genesisBlock.Hash);
+            var block3 = Block.Create(_cryptography, Now, _emptyTransactionList, block2.Hash);
 
             _sut.Push(block2);
             _sut.Push(block3);
@@ -61,7 +61,7 @@ namespace NeatCoinTest
         public void blocks_are_chained()
         {
             var genesisBlock = _sut.Last;
-            var block2 = new Block(_cryptography, Now, _emptyTransactionList, genesisBlock.Hash);
+            var block2 = Block.Create(_cryptography, Now, _emptyTransactionList, genesisBlock.Hash);
 
             _sut.Push(block2);
 
@@ -73,8 +73,8 @@ namespace NeatCoinTest
         [Fact]
         public void unchained_blocks_cannot_be_added()
         {
-            var block1 = new Block(_cryptography, Now, _emptyTransactionList, "0");
-            var block2 = new Block(_cryptography, Now, _emptyTransactionList, "not existing parent");
+            var block1 = Block.Create(_cryptography, Now, _emptyTransactionList, "0");
+            var block2 = Block.Create(_cryptography, Now, _emptyTransactionList, "not existing parent");
 
             _sut.Push(block1);
             _sut.Push(block2);
