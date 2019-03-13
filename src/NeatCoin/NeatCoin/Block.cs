@@ -46,6 +46,7 @@ namespace NeatCoin
         public bool IsChainedTo(Block last) => Parent == last.Hash;
 
         public bool IsValid => MatchesDifficulty(_difficulty);
+        public readonly Transaction RewardTransaction = null;
 
         private bool MatchesDifficulty(int difficulty) =>
             Hash.StartsWith(new string('0', difficulty));

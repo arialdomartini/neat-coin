@@ -81,5 +81,14 @@ namespace NeatCoinTest
 
             result.Should().Be(true);
         }
+
+        [Fact]
+        public void unmined_blocks_should_contain_no_reward_transactions()
+        {
+            var sut = Block
+                .Create(_sha256, Now, _emptyTransactionList, "0", Difficulty);
+
+            sut.RewardTransaction.Should().Be(null);
+        }
     }
 }
