@@ -8,9 +8,9 @@ namespace NeatCoin
     {
         private readonly List<Block> _blocks = new List<Block>();
 
-        public BlockChain(ICryptography cryptography)
+        public BlockChain(ICryptography cryptography, int difficulty)
         {
-            _blocks.Add(new GenesisBlock(cryptography));
+            _blocks.Add(new GenesisBlock(cryptography, difficulty));
         }
 
         internal void Push(Block block)
