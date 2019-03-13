@@ -17,7 +17,7 @@ namespace NeatCoinTest
 
         public BlockChainTest()
         {
-            _sut = new BlockChain(new SHA256(), 3);
+            _sut = new BlockChain(new SHA256(), 2);
             _cryptography = new SHA256();
         }
 
