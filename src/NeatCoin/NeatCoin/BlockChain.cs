@@ -16,7 +16,7 @@ namespace NeatCoin
 
         private static Block CreateGenesisBlock(ICryptography cryptography, int difficulty) =>
             new GenesisBlock(cryptography, difficulty)
-                .Mine();
+                .Mine("some miner");
 
         internal void Push(Block block)
         {

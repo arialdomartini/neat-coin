@@ -20,8 +20,7 @@ namespace NeatCoin
                 GenesisContent,
                 NoParent,
                 difficulty,
-                GenesisNonce
-            )
+                GenesisNonce, 50)
         {
 
         }
