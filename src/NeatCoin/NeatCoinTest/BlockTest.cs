@@ -26,8 +26,8 @@ namespace NeatCoinTest
         public void blocks_created_in_different_moments_should_have_different_hash_values()
         {
             var now = Now;
-            var block1 = Block.Create(_cryptography, now, _emptyTransactionList, "0", Difficulty, 50);
-            var block2 = Block.Create(_cryptography, now.AddMilliseconds(1), _emptyTransactionList, block1.Hash, 3, 50);
+            var block1 = _blockChain.Create(now, _emptyTransactionList, "0");
+            var block2 = _blockChain.Create(now.AddMilliseconds(1), _emptyTransactionList, block1.Hash);
 
             var hash1 = block1.Hash;
             var hash2 = block2.Hash;
@@ -39,8 +39,8 @@ namespace NeatCoinTest
         public void blocks_with_different_parents_should_have_different_hash_values()
         {
             var sameMoment = Now;
-            var block1 = Block.Create(_cryptography, sameMoment, _emptyTransactionList, "0", Difficulty, 50);
-            var block2 = Block.Create(_cryptography, sameMoment, _emptyTransactionList, "1", Difficulty, 50);
+            var block1 = _blockChain.Create(sameMoment, _emptyTransactionList, "0");
+            var block2 = _blockChain.Create(sameMoment, _emptyTransactionList, "1");
 
             var hash1 = block1.Hash;
             var hash2 = block2.Hash;
@@ -53,8 +53,8 @@ namespace NeatCoinTest
         {
             var transactionList1 = new List<Transaction> { new Transaction("some sender", "some receiver", 100)}.ToImmutableList();
             var transactionList2 = new List<Transaction> { new Transaction("some sender", "some receiver", 100), new Transaction("some sender", "some receiver", 100)}.ToImmutableList();
-            var block1 = Block.Create(_cryptography, Now, transactionList1, "0", Difficulty, 50);
-            var block2 = Block.Create(_cryptography, Now, transactionList2, "0", Difficulty, 50);
+            var block1 = _blockChain.Create(Now, transactionList1, "0");
+            var block2 = _blockChain.Create(Now, transactionList2, "0");
 
             var hash1 = block1.Hash;
             var hash2 = block2.Hash;
@@ -65,7 +65,7 @@ namespace NeatCoinTest
         [Fact]
         public void unmined_blocks_should_not_be_valid()
         {
-            var sut = Block.Create(_cryptography, Now, _emptyTransactionList, "0", Difficulty, 50);
+            var sut = _blockChain.Create(Now, _emptyTransactionList, "0");
 
             var result = sut.IsValid;
 
@@ -75,8 +75,8 @@ namespace NeatCoinTest
         [Fact]
         public void mined_blocks_should_be_valid()
         {
-            var block = Block
-                .Create(_cryptography, Now, _emptyTransactionList, "0", Difficulty, 50);
+            var block = _blockChain
+                .Create(Now, _emptyTransactionList, "0");
 
             var sut = _blockChain.Mine(block, "some miner");
 
@@ -88,8 +88,8 @@ namespace NeatCoinTest
         [Fact]
         public void unmined_blocks_should_contain_no_reward_transactions()
         {
-            var sut = Block
-                .Create(_cryptography, Now, _emptyTransactionList, "0", Difficulty, 50);
+            var sut = _blockChain
+                .Create(Now, _emptyTransactionList, "0");
 
             sut.RewardTransaction.Should().Be(null);
         }
@@ -97,8 +97,8 @@ namespace NeatCoinTest
         [Fact]
         public void a_mined_block_should_contain_a_reward_transaction()
         {
-            var block = Block
-                .Create(_cryptography, Now, _emptyTransactionList, "0", Difficulty, 50);
+            var block = _blockChain
+                .Create(Now, _emptyTransactionList, "0");
 
             var sut = _blockChain.Mine(block, "some miner");
 

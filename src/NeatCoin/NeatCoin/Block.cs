@@ -10,29 +10,23 @@ namespace NeatCoin
 {
     internal class Block
     {
-        private readonly DateTimeOffset _createdAt;
-        private readonly ImmutableList<Transaction> _transactions;
+        internal DateTimeOffset CreatedAt { get; }
+        internal ImmutableList<Transaction> Transactions { get; }
         public string Parent { get; }
         private readonly ICryptography _cryptography;
         private readonly int _difficulty;
         private int Nonce { get; }
-        private readonly int _rewardAmount;
 
-        protected Block(ICryptography cryptography, DateTimeOffset createdAt, ImmutableList<Transaction> transactions, string parent, int difficulty, int nonce, int rewardAmount)
+        internal Block(ICryptography cryptography, DateTimeOffset createdAt, ImmutableList<Transaction> transactions, string parent, int difficulty, int nonce)
         {
             _cryptography = cryptography;
 
-            _createdAt = createdAt;
-            _transactions = transactions;
+            CreatedAt = createdAt;
+            Transactions = transactions;
             Parent = parent;
             _difficulty = difficulty;
             Nonce = nonce;
-            _rewardAmount = rewardAmount;
         }
-
-        public static Block Create(ICryptography cryptography, DateTimeOffset utcNow,
-            ImmutableList<Transaction> emptyTransactionList, string parent, int difficulty, int reward, int nonce = 0) =>
-            new Block(cryptography, utcNow, emptyTransactionList, parent, difficulty, nonce, reward);
 
         public string Hash => _cryptography.HashOf(Serialized);
 
@@ -40,8 +34,8 @@ namespace NeatCoin
             JsonConvert.SerializeObject(
                 new
                 {
-                    CreatedAt = _createdAt.AsString(),
-                    Content = _transactions,
+                    CreatedAt = CreatedAt.AsString(),
+                    Content = Transactions,
                     Parent,
                     Nonce
                 });
@@ -50,20 +44,9 @@ namespace NeatCoin
 
         public bool IsValid => MatchesDifficulty(_difficulty);
         public Transaction RewardTransaction =>
-            _transactions.FirstOrDefault(t => t.IsAReward());
-
+            Transactions.FirstOrDefault(t => t.IsAReward());
 
         private bool MatchesDifficulty(int difficulty) =>
             Hash.StartsWith(new string('0', difficulty));
-
-        internal Block CloneWithNonce(int nonce, Transaction rewardTransaction, int rewardAmount) =>
-            Create(
-                _cryptography,
-                _createdAt,
-                _transactions.Add(rewardTransaction),
-                Parent,
-                _difficulty,
-                rewardAmount,
-                nonce);
     }
 }

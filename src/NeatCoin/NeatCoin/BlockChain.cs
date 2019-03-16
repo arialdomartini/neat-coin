@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using NeatCoin.Cryptography;
 
@@ -44,12 +46,25 @@ namespace NeatCoin
             var rewardTransaction = Transaction.CreateReward(miner, _rewardAmount);
             for (var nonce = 0; nonce < int.MaxValue; nonce++)
             {
-                var mined = block.CloneWithNonce(nonce, rewardTransaction, _rewardAmount);
+                var mined = CloneWithNonce(block, nonce, rewardTransaction, _rewardAmount);
                 if (mined.IsValid)
                     return mined;
             }
 
             return null;
         }
+
+        private Block CloneWithNonce(Block block, int nonce, Transaction rewardTransaction, int rewardAmount) =>
+            Create(
+                block.CreatedAt,
+                block.Transactions.Add(rewardTransaction),
+                block.Parent,
+                nonce);
+
+        internal Block Create(DateTimeOffset utcNow,
+            ImmutableList<Transaction> emptyTransactionList, string parent, int nonce = 0) =>
+            new Block(_cryptography, utcNow, emptyTransactionList, parent, _difficulty, nonce);
+
+
     }
 }
