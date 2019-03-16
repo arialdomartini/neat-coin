@@ -30,8 +30,6 @@ namespace NeatCoin
             _rewardAmount = rewardAmount;
         }
 
-
-
         public static Block Create(ICryptography cryptography, DateTimeOffset utcNow,
             ImmutableList<Transaction> emptyTransactionList, string parent, int difficulty, int reward, int nonce = 0) =>
             new Block(cryptography, utcNow, emptyTransactionList, parent, difficulty, nonce, reward);

@@ -7,10 +7,15 @@ namespace NeatCoin
     internal class BlockChain
     {
         private readonly List<Block> _blocks = new List<Block>();
+        private readonly ICryptography _cryptography;
+        private readonly int _difficulty;
 
         public BlockChain(ICryptography cryptography, int difficulty)
         {
-            var genesisBlock = CreateGenesisBlock(cryptography, difficulty);
+            _cryptography = cryptography;
+            _difficulty = difficulty;
+            
+            var genesisBlock = CreateGenesisBlock(_cryptography, _difficulty);
             _blocks.Add(genesisBlock);
         }
 
