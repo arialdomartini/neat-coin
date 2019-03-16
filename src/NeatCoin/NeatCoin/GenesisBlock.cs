@@ -19,7 +19,6 @@ namespace NeatCoin
                 CreationDate,
                 GenesisContent,
                 NoParent,
-                difficulty,
                 GenesisNonce)
         {
 

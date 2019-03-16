@@ -10,7 +10,6 @@ namespace NeatCoinTest
 {
     public class BlockTest
     {
-        private readonly SHA256 _cryptography;
         private DateTimeOffset Now = DateTimeOffset.UtcNow;
         private readonly ImmutableList<Transaction> _emptyTransactionList = ImmutableList.Create<Transaction>();
         private readonly BlockChain _blockChain;
@@ -18,8 +17,7 @@ namespace NeatCoinTest
 
         public BlockTest()
         {
-            _cryptography = new SHA256();
-            _blockChain = new BlockChain(_cryptography, Difficulty, 50);
+            _blockChain = new BlockChain(new SHA256(), Difficulty, 50);
         }
 
         [Fact]
@@ -62,28 +60,6 @@ namespace NeatCoinTest
             hash1.Should().NotBe(hash2);
         }
 
-        [Fact]
-        public void unmined_blocks_should_not_be_valid()
-        {
-            var sut = _blockChain.Create(Now, _emptyTransactionList, "0");
-
-            var result = sut.IsValid;
-
-            result.Should().Be(false);
-        }
-
-        [Fact]
-        public void mined_blocks_should_be_valid()
-        {
-            var block = _blockChain
-                .Create(Now, _emptyTransactionList, "0");
-
-            var sut = _blockChain.Mine(block, "some miner");
-
-            var result = sut.IsValid;
-
-            result.Should().Be(true);
-        }
 
         [Fact]
         public void unmined_blocks_should_contain_no_reward_transactions()

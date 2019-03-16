@@ -95,7 +95,31 @@ namespace NeatCoinTest
         {
             var genesisBlock = _sut.Last;
 
-            genesisBlock.IsValid.Should().Be(true);
+            var result = _sut.IsValid(genesisBlock);
+
+            result.Should().Be(true);
+        }
+
+
+        [Fact]
+        public void unmined_blocks_should_not_be_valid()
+        {
+            var block = _sut.Create(Now, _emptyTransactionList, "0");
+
+            var result = _sut.IsValid(block);
+
+            result.Should().Be(false);
+        }
+
+        [Fact]
+        public void mined_blocks_should_be_valid()
+        {
+            var block = _sut.Create(Now, _emptyTransactionList, "0");
+            var sut = _sut.Mine(block, "some miner");
+
+            var result = _sut.IsValid(sut);
+
+            result.Should().Be(true);
         }
     }
 }

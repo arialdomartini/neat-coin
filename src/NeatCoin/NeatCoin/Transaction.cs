@@ -14,7 +14,7 @@ namespace NeatCoin
             Amount = amount;
         }
 
-        internal bool IsAReward() =>  From== Mint;
+        internal bool IsAReward() =>  From == Mint;
 
         public static Transaction CreateReward(string miner, int rewardAmount) => 
             new Transaction(Mint, miner, rewardAmount);
