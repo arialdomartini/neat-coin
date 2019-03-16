@@ -56,20 +56,7 @@ namespace NeatCoin
         private bool MatchesDifficulty(int difficulty) =>
             Hash.StartsWith(new string('0', difficulty));
 
-        public Block Mine(string miner)
-        {
-            var rewardTransaction = Transaction.CreateReward(miner, _rewardAmount);
-            for (var nonce = 0; nonce < int.MaxValue; nonce++)
-            {
-                var block = CloneWithNonce(nonce, rewardTransaction, _rewardAmount);
-                if (block.IsValid)
-                    return block;
-            }
-
-            return null;
-        }
-
-        private Block CloneWithNonce(int nonce, Transaction rewardTransaction, int rewardAmount) =>
+        internal Block CloneWithNonce(int nonce, Transaction rewardTransaction, int rewardAmount) =>
             Create(
                 _cryptography,
                 _createdAt,
