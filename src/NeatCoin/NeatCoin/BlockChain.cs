@@ -63,9 +63,18 @@ namespace NeatCoin
                 block.Parent,
                 nonce);
 
-        internal Block Create(DateTimeOffset utcNow,
-            ImmutableList<Transaction> emptyTransactionList, string parent, int nonce = 0) =>
-            new Block(_cryptography, utcNow, emptyTransactionList, parent, nonce);
+        internal Block Create(
+            DateTimeOffset utcNow,
+            ImmutableList<Transaction> emptyTransactionList,
+            string parent,
+            int nonce = 0) =>
+
+            new Block(
+                _cryptography,
+                utcNow,
+                emptyTransactionList,
+                parent,
+                nonce);
 
 
     }
