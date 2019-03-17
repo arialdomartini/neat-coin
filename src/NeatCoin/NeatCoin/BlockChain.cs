@@ -19,14 +19,14 @@ namespace NeatCoin
             _difficulty = difficulty;
             _rewardAmount = rewardAmount;
 
-            var genesisBlock = CreateGenesisBlock(_cryptography, _difficulty);
+            var genesisBlock = CreateGenesisBlock(_cryptography);
             _blocks.Add(genesisBlock);
         }
 
-        private Block CreateGenesisBlock(ICryptography cryptography, int difficulty)
+        private Block CreateGenesisBlock(ICryptography cryptography)
         {
             return Mine(
-                new GenesisBlock(cryptography, difficulty),
+                new GenesisBlock(cryptography),
                 "some miner");
         }
 

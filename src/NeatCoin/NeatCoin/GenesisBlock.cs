@@ -13,7 +13,7 @@ namespace NeatCoin
             new List<Transaction>().ToImmutableList();
         private const int GenesisNonce = 0;
 
-        public GenesisBlock(ICryptography cryptography, int difficulty) :
+        public GenesisBlock(ICryptography cryptography) :
             base(
                 cryptography,
                 CreationDate,

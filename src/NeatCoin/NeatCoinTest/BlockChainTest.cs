@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using FluentAssertions;
 using NeatCoin;
@@ -11,14 +10,12 @@ namespace NeatCoinTest
     public class BlockChainTest
     {
         private readonly BlockChain _sut;
-        private readonly SHA256 _cryptography;
         private readonly ImmutableList<Transaction> _emptyTransactionList = ImmutableList.Create<Transaction>();
         private DateTimeOffset Now => DateTimeOffset.UtcNow;
 
         public BlockChainTest()
         {
             _sut = new BlockChain(new SHA256(), 2, 50);
-            _cryptography = new SHA256();
         }
 
         [Fact]
