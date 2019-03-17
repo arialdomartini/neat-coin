@@ -100,7 +100,6 @@ namespace NeatCoinTest
             result.Should().Be(true);
         }
 
-
         [Fact]
         public void unmined_blocks_should_not_be_valid()
         {

@@ -46,7 +46,7 @@ namespace NeatCoin
             var rewardTransaction = Transaction.CreateReward(miner, _rewardAmount);
             for (var nonce = 0; nonce < int.MaxValue; nonce++)
             {
-                var mined = CloneWithNonce(block, nonce, rewardTransaction, _rewardAmount);
+                var mined = CloneWithNonce(block, nonce, rewardTransaction);
                 if (IsValid(mined))
                     return mined;
             }
@@ -56,7 +56,7 @@ namespace NeatCoin
 
         internal bool IsValid(Block block) => block.MatchesDifficulty(_difficulty);
 
-        private Block CloneWithNonce(Block block, int nonce, Transaction rewardTransaction, int rewardAmount) =>
+        private Block CloneWithNonce(Block block, int nonce, Transaction rewardTransaction) =>
             Create(
                 block.CreatedAt,
                 block.Transactions.Add(rewardTransaction),
