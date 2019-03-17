@@ -47,14 +47,16 @@ namespace NeatCoin
             for (var nonce = 0; nonce < int.MaxValue; nonce++)
             {
                 var mined = CloneWithNonce(block, nonce, rewardTransaction);
-                if (IsValid(mined))
+                if (MatchesDifficulty(mined))
                     return mined;
             }
 
             return null;
         }
 
-        internal bool IsValid(Block block) => block.MatchesDifficulty(_difficulty);
+        private bool MatchesDifficulty(Block block) => block.MatchesDifficulty(_difficulty);
+
+        internal bool IsValid(Block block) => MatchesDifficulty(block);
 
         private Block CloneWithNonce(Block block, int nonce, Transaction rewardTransaction) =>
             Create(
@@ -75,7 +77,5 @@ namespace NeatCoin
                 emptyTransactionList,
                 parent,
                 nonce);
-
-
     }
 }
