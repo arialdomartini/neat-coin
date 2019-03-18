@@ -6,26 +6,27 @@ namespace NeatCoin
 {
     public class Wallet
     {
-        private readonly ImmutableList<Transaction> _transactions;
-
-        private Wallet(ImmutableList<Transaction> transactions)
-        {
-            _transactions = transactions;
-        }
+        private readonly ImmutableList<Group> _groups;
 
         public Wallet()
         {
-            _transactions = ImmutableList.Create<Transaction>();
+            _groups = ImmutableList.Create<Group>();
         }
 
-        public Wallet Push(Transaction transaction) =>
-            new Wallet(_transactions.Add(transaction));
+        private Wallet(ImmutableList<Group> groups)
+        {
+            _groups = groups;
+        }
+
+        public Wallet Push(Group group) =>
+            new Wallet(_groups.Add(group));
 
         public int BalanceOf(Account account) =>
             Total(Transaction.IsReceiver(account)) - Total(Transaction.IsSender(account));
 
         private int Total(Func<Transaction, bool> condition) =>
-            _transactions
+            _groups
+                .SelectMany(g => g.Transactions)
                 .Where(condition)
                 .Sum(t => t.Amount);
     }
