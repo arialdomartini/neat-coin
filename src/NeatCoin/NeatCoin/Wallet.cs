@@ -1,21 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using static NeatCoinTest.Transaction;
 
-namespace NeatCoinTest
+namespace NeatCoin
 {
-    internal class Wallet
+    public class Wallet
     {
         private readonly ImmutableList<Transaction> _transactions;
 
-        private Wallet(Transaction transaction)
+        private Wallet(ImmutableList<Transaction> transactions)
         {
-            _transactions = new List<Transaction>
-            {
-                transaction
-            }.ToImmutableList();
+            _transactions = transactions;
         }
 
         public Wallet()
@@ -23,11 +18,11 @@ namespace NeatCoinTest
             _transactions = ImmutableList.Create<Transaction>();
         }
 
-        internal Wallet Push(Transaction transaction) =>
-            new Wallet(transaction);
+        public Wallet Push(Transaction transaction) =>
+            new Wallet(_transactions.Add(transaction));
 
         public int BalanceOf(Account account) =>
-            Total(IsReceiver(account)) - Total(IsSender(account));
+            Total(Transaction.IsReceiver(account)) - Total(Transaction.IsSender(account));
 
         private int Total(Func<Transaction, bool> condition) =>
             _transactions

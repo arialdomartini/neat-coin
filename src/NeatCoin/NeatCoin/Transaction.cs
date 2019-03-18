@@ -1,17 +1,17 @@
 using System;
 
-namespace NeatCoinTest
+namespace NeatCoin
 {
     public class Transaction
     {
         public Account Sender { get; }
-        public Account Account { get; }
+        public Account Receiver { get; }
         public Amount Amount { get; }
 
-        public Transaction(Account sender, Account account, Amount amount)
+        public Transaction(Account sender, Account receiver, Amount amount)
         {
             Sender = sender;
-            Account = account;
+            Receiver = receiver;
             Amount = amount;
         }
 
@@ -19,6 +19,6 @@ namespace NeatCoinTest
             t => t.Sender == sender;
 
         public static Func<Transaction, bool> IsReceiver(Account account) =>
-            t => t.Account == account;
+            t => t.Receiver == account;
     }
 }

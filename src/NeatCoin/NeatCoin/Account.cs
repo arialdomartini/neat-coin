@@ -1,4 +1,4 @@
-namespace NeatCoinTest
+namespace NeatCoin
 {
     public struct Account
     {
