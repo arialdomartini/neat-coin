@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace NeatCoin
 {
-    public class Group
+    public struct Group
     {
         public ImmutableList<Transaction> Transactions { get; }
 

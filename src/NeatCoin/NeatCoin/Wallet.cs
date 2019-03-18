@@ -18,6 +18,8 @@ namespace NeatCoin
             _groups = groups;
         }
 
+        public Group Last => _groups.Last();
+
         public Wallet Push(Group group) =>
             new Wallet(_groups.Add(group));
 

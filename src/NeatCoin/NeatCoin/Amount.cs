@@ -1,6 +1,6 @@
 namespace NeatCoin
 {
-    public class Amount
+    public struct Amount
     {
         private Amount(int value)
         {

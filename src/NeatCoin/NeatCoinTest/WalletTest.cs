@@ -32,5 +32,20 @@ namespace NeatCoinTest
             wallet.BalanceOf("to").Should().Be(150);
         }
 
+        [Fact]
+        public void should_retrieve_last_group()
+        {
+            var group1 = new Group(ImmutableList.Create(
+                new Transaction("from", "to", 100),
+                new Transaction("from", "to", 100)));
+            var group2 = new Group(ImmutableList.Create(
+                new Transaction("to", "from", 50)));
+
+            var wallet = _sut
+                .Push(group1)
+                .Push(group2);
+
+            wallet.Last.Should().Be(group2);
+        }
     }
 }
