@@ -1,4 +1,3 @@
-using System;
 using FluentAssertions;
 using Xunit;
 using System.Security.Cryptography;
@@ -12,29 +11,70 @@ namespace NeatCoinTest
         private readonly UnicodeEncoding _encoding = new UnicodeEncoding();
 
         [Fact]
-        public void should_sign_and_verify_a_message()
+        public void should_encrypt_and_decrypt_a_message()
         {
             const string message = "message to sign";
 
             using (var rsa = new RSACryptoServiceProvider())
             {
-                var privateKey = rsa.ExportParameters(true);
                 var publicKey = rsa.ExportParameters(false);
+                var privateKey = rsa.ExportParameters(true);
 
-                var signature = Sign(message, privateKey);
-                var verification = Verify(message, signature, publicKey);
+                var encrypted = Encrypt(message, publicKey);
+                var decryptedData = Decrypt(encrypted, privateKey);
 
-                verification.Should().Be(true);
+
+                _encoding.GetString(decryptedData).Should().Be(message);
+            }
+        }
+
+        [Fact]
+        public void should_sign_and_verify_a_message()
+        {
+            const string message = "message to sign";
+
+            var keyPair = GenerateKeyPair();
+
+            var signature = Sign(message, keyPair.PrivateKey);
+            var verification = Verify(message, signature, keyPair.PublicKey);
+
+            verification.Should().Be(true);
+        }
+
+        public KeyPair GenerateKeyPair()
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                return new KeyPair(
+                    rsa.ExportParameters(true),
+                    rsa.ExportParameters(false));
+            }
+        }
+
+        private byte[] Encrypt(string message, RSAParameters publicKey)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportParameters(publicKey);
+                return rsa.Encrypt(_encoding.GetBytes(message), false);
+            }
+        }
+
+        private static byte[] Decrypt(byte[] dataToDecrypt, RSAParameters rsaKeyInfo)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportParameters(rsaKeyInfo);
+                return rsa.Decrypt(dataToDecrypt, false);
             }
         }
 
         private byte[] Sign(string message, RSAParameters privateKey)
         {
-            var dataToEncrypt = _encoding.GetBytes(message);
             using (var rsa = new RSACryptoServiceProvider())
             {
                 rsa.ImportParameters(privateKey);
-                return rsa.SignData(dataToEncrypt, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                return rsa.SignData(_encoding.GetBytes(message), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             }
         }
 
