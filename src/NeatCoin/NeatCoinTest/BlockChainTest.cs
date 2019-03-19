@@ -116,7 +116,7 @@ namespace NeatCoinTest
         {
             var block = _sut.MakeBlock(TransactionList1);
 
-            var result = block.IsValid(Difficulty);
+            var result = block.HashMatchesDifficulty(Difficulty);
 
             result.Should().Be(false);
         }
@@ -127,7 +127,7 @@ namespace NeatCoinTest
             var block = _sut.MakeBlock(TransactionList1);
             var mined = _sut.Mine(block, "some miner");
 
-            var result = mined.IsValid(Difficulty);
+            var result = mined.HashMatchesDifficulty(Difficulty);
 
             result.Should().Be(true);
         }

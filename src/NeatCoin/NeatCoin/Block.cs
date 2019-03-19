@@ -29,7 +29,7 @@ namespace NeatCoin
             new SHA256Managed()
                 .ComputeHash(@string.ToByteArray());
 
-        public bool IsValid(int difficulty) =>
+        public bool HashMatchesDifficulty(int difficulty) =>
             Hash.StartsWithASeriesOf0Repeated(difficulty);
     }
 }

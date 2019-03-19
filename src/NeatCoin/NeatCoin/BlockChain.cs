@@ -19,7 +19,7 @@ namespace NeatCoin
         }
 
         public Block Last => _blocks.Last();
-        public bool IsValid => _blocks.All(g => g.IsValid(_difficulty));
+        public bool IsValid => _blocks.All(g => g.HashMatchesDifficulty(_difficulty));
 
         public BlockChain Push(Block block) =>
             new BlockChain(_blocks.Add(block), _difficulty, _rewardAmount);
@@ -53,7 +53,7 @@ namespace NeatCoin
             for (var i = 0; i < int.MaxValue; i++)
             {
                 var cloneWithNonce = CloneWithNonce(block, i, rewardTransaction);
-                if (cloneWithNonce.IsValid(_difficulty))
+                if (cloneWithNonce.HashMatchesDifficulty(_difficulty))
                     return cloneWithNonce;
             }
             throw new Exception();
