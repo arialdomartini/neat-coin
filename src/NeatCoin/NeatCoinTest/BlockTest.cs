@@ -13,7 +13,7 @@ namespace NeatCoinTest
 
         public BlockTest()
         {
-            _wallet = new BlockChain(_emptyList, Difficulty);
+            _wallet = new BlockChain(_emptyList, Difficulty, 50);
         }
 
         [Fact]

@@ -10,6 +10,7 @@ namespace NeatCoinTest
     {
         private readonly BlockChain _sut;
         private const int Difficulty = 2;
+        private const int RewardAmount = 50;
         private readonly ImmutableList<Block> _emptyList = ImmutableList.Create<Block>();
 
         private static readonly ImmutableList<Transaction> TransactionList1 = ImmutableList.Create(
@@ -21,7 +22,7 @@ namespace NeatCoinTest
 
         public BlockChainTest()
         {
-            _sut = new BlockChain(_emptyList, Difficulty);
+            _sut = new BlockChain(_emptyList, Difficulty, RewardAmount);
         }
 
         [Fact]
@@ -102,7 +103,7 @@ namespace NeatCoinTest
         public void should_be_valid_if_blocks_are_mined()
         {
             var block = _sut.MakeBlock(TransactionList1);
-            var mined = _sut.Mine(block);
+            var mined = _sut.Mine(block, "some miner");
             var wallet = _sut.Push(mined);
 
             var result = wallet.IsValid;
@@ -124,11 +125,48 @@ namespace NeatCoinTest
         public void blocks_are_valid_if_their_hash_matches_difficulty()
         {
             var block = _sut.MakeBlock(TransactionList1);
-            var mined = _sut.Mine(block);
+            var mined = _sut.Mine(block, "some miner");
 
             var result = mined.IsValid(Difficulty);
 
             result.Should().Be(true);
+        }
+
+        [Fact]
+        public void unmined_blocks_should_contain_no_reward_transactions()
+        {
+            var block = _sut.MakeBlock(TransactionList1);
+
+            var rewardTransaction = block.RewardTransaction;
+
+            rewardTransaction.Should().Be(null);
+        }
+
+        [Fact]
+        public void mined_blocks_should_contain_a_reward_transaction()
+        {
+            var block = _sut.MakeBlock(TransactionList1);
+            var mined = _sut.Mine(block, "some miner");
+
+            var rewardTransaction = mined.RewardTransaction;
+
+            rewardTransaction.Should().BeEquivalentTo(
+                new Transaction(
+                    "mint",
+                    "some miner",
+                    RewardAmount));
+        }
+
+        [Fact]
+        public void miner_should_receive_a_reward_amount()
+        {
+            _sut.BalanceOf("some lucky miner").Should().Be(0);
+
+            var block = _sut.MakeBlock(ImmutableList<Transaction>.Empty);
+            var mined = _sut.Mine(block, "some lucky miner");
+            var blockChain = _sut.Push(mined);
+
+            blockChain.BalanceOf("some lucky miner").Should().Be(RewardAmount);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace NeatCoin
@@ -13,9 +14,11 @@ namespace NeatCoin
             Convert.ToBase64String(
                 SHA256(new{ Transactions, Nonce }.ToJson()));
 
+        public Transaction RewardTransaction => Transactions.SingleOrDefault(t => t.Sender == "mint");
+
         public Hash Parent;
 
-        public Block(ImmutableList<Transaction> transactions, Hash parent, int nonce)
+        internal Block(ImmutableList<Transaction> transactions, Hash parent, int nonce)
         {
             Transactions = transactions;
             Nonce = nonce;
