@@ -60,5 +60,15 @@ namespace NeatCoinTest
 
             result.Should().Be(group);
         }
+
+        [Fact]
+        public void genesis_group_should_have_no_parents()
+        {
+            var group = _sut.MakeGroup(TransactionList1);
+
+            var parent = group.Parent;
+
+            parent.Should().Be((Hash)null);
+        }
     }
 }
