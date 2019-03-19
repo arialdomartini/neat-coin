@@ -31,5 +31,8 @@ namespace NeatCoin
                 .SelectMany(g => g.Transactions)
                 .Where(condition)
                 .Sum(t => t.Amount);
+
+        public Group GetGroup(string hash) =>
+            _groups.Find(g => g.Hash == hash);
     }
 }

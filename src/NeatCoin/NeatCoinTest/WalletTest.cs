@@ -10,6 +10,13 @@ namespace NeatCoinTest
     {
         private readonly Wallet _sut;
 
+        private readonly Group _group1 = new Group(ImmutableList.Create(
+            new Transaction("from", "to", 100),
+            new Transaction("from", "to", 100)));
+
+        private readonly Group _group2 = new Group(ImmutableList.Create(
+            new Transaction("to", "from", 50)));
+
         public WalletTest()
         {
             _sut = new Wallet();
@@ -35,17 +42,25 @@ namespace NeatCoinTest
         [Fact]
         public void should_retrieve_last_group()
         {
-            var group1 = new Group(ImmutableList.Create(
-                new Transaction("from", "to", 100),
-                new Transaction("from", "to", 100)));
-            var group2 = new Group(ImmutableList.Create(
-                new Transaction("to", "from", 50)));
-
             var wallet = _sut
-                .Push(group1)
-                .Push(group2);
+                .Push(_group1)
+                .Push(_group2);
 
-            wallet.Last.Should().Be(group2);
+            wallet.Last.Should().Be(_group2);
+        }
+
+        [Fact]
+        public void should_retrieve_groups_by_hash()
+        {
+            var wallet = _sut
+                .Push(_group1)
+                .Push(_group2);
+
+            var result1 = wallet.GetGroup(_group1.Hash);
+            var result2 = wallet.GetGroup(_group2.Hash);
+
+            result1.Should().Be(_group1);
+            result2.Should().Be(_group2);
         }
     }
 }
