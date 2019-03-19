@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using Xunit;
 using System.Security.Cryptography;
@@ -41,7 +42,15 @@ namespace NeatCoinTest
             verification.Should().Be(true);
         }
 
-        public KeyPair GenerateKeyPair()
+        public T WithRsa<T>(Func<RSA, T> func)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                return func(rsa);
+            }
+        }
+        
+        public KeyPair GenerateKeyPairold()
         {
             using (var rsa = new RSACryptoServiceProvider())
             {
@@ -50,6 +59,13 @@ namespace NeatCoinTest
                     rsa.ExportParameters(false));
             }
         }
+        public KeyPair GenerateKeyPair() =>
+            WithRsa(GenerateKeyPair);
+
+        private static KeyPair GenerateKeyPair(RSA rsa) =>
+            new KeyPair(
+                rsa.ExportParameters(true),
+                rsa.ExportParameters(false));
 
         private byte[] Encrypt(string message, RSAParameters publicKey)
         {
