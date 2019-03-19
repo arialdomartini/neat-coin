@@ -42,66 +42,48 @@ namespace NeatCoinTest
             verification.Should().Be(true);
         }
 
-        public T WithRsa<T>(Func<RSA, T> func)
+        public T WithRsa<T>(Func<RSACryptoServiceProvider, T> func)
         {
             using (var rsa = new RSACryptoServiceProvider())
             {
                 return func(rsa);
             }
         }
-        
-        public KeyPair GenerateKeyPairold()
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                return new KeyPair(
-                    rsa.ExportParameters(true),
-                    rsa.ExportParameters(false));
-            }
-        }
+
         public KeyPair GenerateKeyPair() =>
-            WithRsa(GenerateKeyPair);
+            WithRsa(rsa =>
+                new KeyPair(
+                    rsa.ExportParameters(true),
+                    rsa.ExportParameters(false)));
 
-        private static KeyPair GenerateKeyPair(RSA rsa) =>
-            new KeyPair(
-                rsa.ExportParameters(true),
-                rsa.ExportParameters(false));
+        public byte[] Encrypt(string message, RSAParameters publicKey) =>
+            WithRsa(rsa => rsa
+                .LoadKey(publicKey)
+                .Encrypt(_encoding.GetBytes(message), false));
 
-        private byte[] Encrypt(string message, RSAParameters publicKey)
+        public byte[] Decrypt(byte[] dataToDecrypt, RSAParameters privateKey) =>
+            WithRsa(rsa => rsa
+                .LoadKey(privateKey)
+                .Decrypt(dataToDecrypt, false));
+
+        private byte[] Sign(string message, RSAParameters privateKey) =>
+            WithRsa(rsa => rsa
+                .LoadKey(privateKey)
+                .SignData(_encoding.GetBytes(message), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1));
+
+        private bool Verify(string message, byte[] signature, RSAParameters publicKey) =>
+            WithRsa(rsa => rsa
+                .LoadKey(publicKey)
+                .VerifyData(_encoding.GetBytes(message), signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1)
+            );
+    }
+
+    public static class RsaCryptoServiceProviderExtensions
+    {
+        public static RSACryptoServiceProvider LoadKey(this RSACryptoServiceProvider rsa, RSAParameters publicKey)
         {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.ImportParameters(publicKey);
-                return rsa.Encrypt(_encoding.GetBytes(message), false);
-            }
+            rsa.ImportParameters(publicKey);
+            return rsa;
         }
-
-        private static byte[] Decrypt(byte[] dataToDecrypt, RSAParameters rsaKeyInfo)
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.ImportParameters(rsaKeyInfo);
-                return rsa.Decrypt(dataToDecrypt, false);
-            }
-        }
-
-        private byte[] Sign(string message, RSAParameters privateKey)
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.ImportParameters(privateKey);
-                return rsa.SignData(_encoding.GetBytes(message), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            }
-        }
-
-        private bool Verify(string message, byte[] signature, RSAParameters publicKey)
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.ImportParameters(publicKey);
-                return rsa.VerifyData(_encoding.GetBytes(message), signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            }
-        }
-
     }
 }
