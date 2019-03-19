@@ -34,5 +34,8 @@ namespace NeatCoin
 
         public Group GetGroup(string hash) =>
             _groups.Find(g => g.Hash == hash);
+
+        public Group MakeGroup(ImmutableList<Transaction> transactionList) =>
+            new Group(transactionList);
     }
 }
