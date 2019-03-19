@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace NeatCoin
 {
-    public struct Group
+    public struct Block
     {
         public ImmutableList<Transaction> Transactions { get; }
         public int Nonce { get; }
@@ -15,7 +15,7 @@ namespace NeatCoin
 
         public Hash Parent;
 
-        public Group(ImmutableList<Transaction> transactions, Hash parent, int nonce)
+        public Block(ImmutableList<Transaction> transactions, Hash parent, int nonce)
         {
             Transactions = transactions;
             Nonce = nonce;
