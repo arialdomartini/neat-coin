@@ -6,22 +6,20 @@ namespace NeatCoin
 {
     public class Wallet
     {
+        private readonly int _difficulty;
         private readonly ImmutableList<Group> _groups;
 
-        public Wallet()
-        {
-            _groups = ImmutableList.Create<Group>();
-        }
-
-        private Wallet(ImmutableList<Group> groups)
+        public Wallet(ImmutableList<Group> groups, int difficulty)
         {
             _groups = groups;
+            _difficulty = difficulty;
         }
 
         public Group Last => _groups.Last();
+        public bool IsValid => _groups.All(g => g.IsValid(_difficulty));
 
         public Wallet Push(Group group) =>
-            new Wallet(_groups.Add(group));
+            new Wallet(_groups.Add(group), _difficulty);
 
         private Hash LastHash()
         {
@@ -43,7 +41,21 @@ namespace NeatCoin
         public Group GetGroup(string hash) =>
             _groups.Find(g => g.Hash == hash);
 
-        public Group MakeGroup(ImmutableList<Transaction> transactionList) =>
-            new Group(transactionList, LastHash());
+        public Group MakeGroup(ImmutableList<Transaction> transactionList, int nonce = 0) =>
+            new Group(transactionList, LastHash(), nonce);
+
+        public Group Mine(Group group)
+        {
+            for (var i = 0; i < int.MaxValue; i++)
+            {
+                var cloneWithNonce = CloneWithNonce(group, i);
+                if (cloneWithNonce.IsValid(_difficulty))
+                    return cloneWithNonce;
+            }
+            throw new Exception();
+        }
+
+        private Group CloneWithNonce(Group group, int nonce) =>
+            new Group(group.Transactions, group.Parent, nonce);
     }
 }

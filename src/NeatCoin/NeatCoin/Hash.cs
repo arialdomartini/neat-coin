@@ -14,5 +14,8 @@ namespace NeatCoin
             new Hash(amount);
 
         private string Value { get; }
+
+        public bool StartsWithASeriesOf0Repeated(int times) => 
+            Value.StartsWith(new string('0', times));
     }
 }
