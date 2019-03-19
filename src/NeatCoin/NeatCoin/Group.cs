@@ -13,10 +13,10 @@ namespace NeatCoin
 
         public Hash Parent;
 
-        public Group(ImmutableList<Transaction> transactions)
+        public Group(ImmutableList<Transaction> transactions, Hash parent)
         {
             Transactions = transactions;
-            Parent = null;
+            Parent = parent;
         }
 
         private static byte[] SHA256(string @string) =>

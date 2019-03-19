@@ -68,7 +68,22 @@ namespace NeatCoinTest
 
             var parent = group.Parent;
 
-            parent.Should().Be((Hash)null);
+            parent.Should().Be(default(Hash));
+        }
+
+        [Fact]
+        public void group_should_be_chained()
+        {
+            var group1 = _sut.MakeGroup(TransactionList1);
+            var wallet = _sut.Push(group1);
+
+            var group2 = wallet.MakeGroup(TransactionList2);
+            wallet = wallet.Push(group2);
+
+            var last = wallet.Last;
+            var parent = wallet.GetGroup(last.Parent);
+
+            parent.Should().Be(group1);
         }
     }
 }

@@ -23,6 +23,14 @@ namespace NeatCoin
         public Wallet Push(Group group) =>
             new Wallet(_groups.Add(group));
 
+        private Hash LastHash()
+        {
+            var lastHash = default(Hash);
+            if(_groups.Any())
+                lastHash = Last.Hash;
+            return lastHash;
+        }
+
         public int BalanceOf(Account account) =>
             Total(Transaction.IsReceiver(account)) - Total(Transaction.IsSender(account));
 
@@ -36,6 +44,6 @@ namespace NeatCoin
             _groups.Find(g => g.Hash == hash);
 
         public Group MakeGroup(ImmutableList<Transaction> transactionList) =>
-            new Group(transactionList);
+            new Group(transactionList, LastHash());
     }
 }
