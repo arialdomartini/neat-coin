@@ -30,38 +30,38 @@ namespace NeatCoinTest
         [Fact]
         public void should_retrieve_accounts_balances_with_multiple_transactions()
         {
-            var wallet = _sut
+            var blockChain = _sut
                 .Push(_sut.MakeBlock(TransactionList1))
                 .Push(_sut.MakeBlock(TransactionList2));
 
-            wallet.BalanceOf("from").Should().Be(-150);
-            wallet.BalanceOf("to").Should().Be(150);
+            blockChain.BalanceOf("from").Should().Be(-150);
+            blockChain.BalanceOf("to").Should().Be(150);
         }
 
         [Fact]
         public void should_retrieve_last_block()
         {
             var block1 = _sut.MakeBlock(TransactionList1);
-            var wallet = _sut
+            var blockChain = _sut
                 .Push(block1);
 
-            wallet.Last.Should().Be(block1);
+            blockChain.Last.Should().Be(block1);
 
-            var block2 = wallet.MakeBlock(TransactionList2);
-            wallet = wallet
+            var block2 = blockChain.MakeBlock(TransactionList2);
+            blockChain = blockChain
                 .Push(block2);
 
-            wallet.Last.Should().Be(block2);
+            blockChain.Last.Should().Be(block2);
         }
 
         [Fact]
         public void should_retrieve_blocks_by_hash()
         {
             var block = _sut.MakeBlock(TransactionList1);
-            var wallet = _sut
+            var blockChain = _sut
                 .Push(block);
 
-            var result = wallet.GetBlock(block.Hash);
+            var result = blockChain.GetBlock(block.Hash);
 
             result.Should().Be(block);
         }
@@ -80,13 +80,13 @@ namespace NeatCoinTest
         public void block_should_be_chained()
         {
             var block1 = _sut.MakeBlock(TransactionList1);
-            var wallet = _sut.Push(block1);
+            var blockChain = _sut.Push(block1);
 
-            var block2 = wallet.MakeBlock(TransactionList2);
-            wallet = wallet.Push(block2);
+            var block2 = blockChain.MakeBlock(TransactionList2);
+            blockChain = blockChain.Push(block2);
 
-            var last = wallet.Last;
-            var parent = wallet.GetBlock(last.Parent);
+            var last = blockChain.Last;
+            var parent = blockChain.GetBlock(last.Parent);
 
             parent.Should().Be(block1);
         }
@@ -94,9 +94,9 @@ namespace NeatCoinTest
         [Fact]
         public void should_not_be_valid_if_blocks_are_not_mined()
         {
-            var wallet = _sut.Push(_sut.MakeBlock(TransactionList1));
+            var blockChain = _sut.Push(_sut.MakeBlock(TransactionList1));
 
-            var result = wallet.IsValid;
+            var result = blockChain.IsValid;
 
             result.Should().Be(false);
         }
@@ -104,13 +104,35 @@ namespace NeatCoinTest
         [Fact]
         public void should_be_valid_if_blocks_are_mined()
         {
-            var block = _sut.MakeBlock(TransactionList1);
+            var block = _sut.MakeBlock(EmptyTransactionList);
             var mined = _sut.Mine(block, "some miner");
-            var wallet = _sut.Push(mined);
+            var blockChain = _sut.Push(mined);
 
-            var result = wallet.IsValid;
+            var result = blockChain.IsValid;
 
             result.Should().Be(true);
+        }
+        
+        [Fact]
+        public void should_not_be_valid_if_some_accounts_have_negative_balance()
+        {
+            var block = _sut.MakeBlock(ImmutableList.Create(
+                new Transaction("from", "to", 100)));
+            var mined = _sut.Mine(block, "miner");
+            var blockChain = _sut.Push(mined);
+
+            blockChain.IsValid.Should().Be(false);
+        }
+
+        [Fact]
+        public void miners_can_spend_the_money_they_have_earned()
+        {
+            var block = _sut.MakeBlock(ImmutableList.Create(
+                new Transaction("miner", "to", 25)));
+            var mined = _sut.Mine(block, "miner");
+            var blockChain = _sut.Push(mined);
+
+            blockChain.IsValid.Should().Be(true);
         }
 
         [Fact]

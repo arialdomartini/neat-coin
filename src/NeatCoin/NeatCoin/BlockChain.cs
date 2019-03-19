@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -19,7 +20,22 @@ namespace NeatCoin
         }
 
         public Block Last => _blocks.Last();
-        public bool IsValid => _blocks.All(g => g.HashMatchesDifficulty(_difficulty));
+        public bool IsValid => 
+            _blocks.All(g => g.HashMatchesDifficulty(_difficulty)) &&
+            AllBalancesArePositive(_blocks);
+
+        private bool AllBalancesArePositive(IEnumerable<Block> blocks) =>
+            blocks
+                .SelectMany(Accounts)
+                .Where(AccountIsNotMint)
+                .All(HasPositiveBalance);
+
+        private static bool AccountIsNotMint(Account a) => a != Mint;
+
+        private bool HasPositiveBalance(Account a) => BalanceOf(a) > 0;
+
+        private static IEnumerable<Account> Accounts(Block block) =>
+            block.Transactions.SelectMany(t => new List<Account>{t.Sender, t.Receiver});
 
         public BlockChain Push(Block block) =>
             new BlockChain(_blocks.Add(block), _difficulty, _rewardAmount);
