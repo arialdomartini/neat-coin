@@ -7,6 +7,7 @@ namespace NeatCoin
         public Account Sender { get; }
         public Account Receiver { get; }
         public Amount Amount { get; }
+        public virtual bool IsReward => false;
 
         public Transaction(Account sender, Account receiver, Amount amount)
         {

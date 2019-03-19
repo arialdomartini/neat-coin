@@ -13,6 +13,8 @@ namespace NeatCoinTest
         private const int RewardAmount = 50;
         private readonly ImmutableList<Block> _emptyList = ImmutableList.Create<Block>();
 
+        private static readonly ImmutableList<Transaction> EmptyTransactionList = ImmutableList<Transaction>.Empty;
+
         private static readonly ImmutableList<Transaction> TransactionList1 = ImmutableList.Create(
             new Transaction("from", "to", 100),
             new Transaction("from", "to", 100));
@@ -151,7 +153,7 @@ namespace NeatCoinTest
             var rewardTransaction = mined.RewardTransaction;
 
             rewardTransaction.Should().BeEquivalentTo(
-                new Transaction(
+                new RewardTransaction(
                     "mint",
                     "some miner",
                     RewardAmount));
@@ -162,7 +164,7 @@ namespace NeatCoinTest
         {
             _sut.BalanceOf("some lucky miner").Should().Be(0);
 
-            var block = _sut.MakeBlock(ImmutableList<Transaction>.Empty);
+            var block = _sut.MakeBlock(EmptyTransactionList);
             var mined = _sut.Mine(block, "some lucky miner");
             var blockChain = _sut.Push(mined);
 

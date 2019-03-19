@@ -49,7 +49,7 @@ namespace NeatCoin
 
         public Block Mine(Block block, string miner)
         {
-            var rewardTransaction = new Transaction(Mint, miner, _rewardAmount);
+            var rewardTransaction = new RewardTransaction(Mint, miner, _rewardAmount);
             for (var i = 0; i < int.MaxValue; i++)
             {
                 var cloneWithNonce = CloneWithNonce(block, i, rewardTransaction);

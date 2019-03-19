@@ -14,7 +14,7 @@ namespace NeatCoin
             Convert.ToBase64String(
                 SHA256(new{ Transactions, Nonce }.ToJson()));
 
-        public Transaction RewardTransaction => Transactions.SingleOrDefault(t => t.Sender == "mint");
+        public Transaction RewardTransaction => Transactions.SingleOrDefault(t => t.IsReward);
 
         public Hash Parent;
 
