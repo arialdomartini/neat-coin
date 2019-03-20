@@ -1,14 +1,11 @@
 using System;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using FluentAssertions;
-using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
@@ -17,76 +14,108 @@ using Xunit;
 namespace NeatCoinTest
 {
 
-    public class Helper
+    public class SimpleRSA
     {
         private static readonly UnicodeEncoding Encoding = new UnicodeEncoding();
+        private RSACryptoServiceProvider _rsaCryptoServiceProvider => new RSACryptoServiceProvider(1024);
 
-        public static AsymmetricCipherKeyPair Generate()
+        public KeyPair GeneratePair()
         {
             var rsaKeyPairGenerator = new RsaKeyPairGenerator();
             rsaKeyPairGenerator.Init(new KeyGenerationParameters(new SecureRandom(), 1024));
-            return rsaKeyPairGenerator.GenerateKeyPair();
+            var pair = rsaKeyPairGenerator.GenerateKeyPair();
+
+            return new KeyPair(
+                pair.SerializedPrivate(),
+                pair.SerializedPublic());
         }
 
-        public static byte[] Sign(AsymmetricCipherKeyPair pair, string message)
+        public string Sign(string message, string serializedPrivateKey)
         {
-            var serializedPrivate = SerializedPrivate(pair);
+            using (var rsa = _rsaCryptoServiceProvider)
+            {
+                rsa.ImportParameters(
+                    serializedPrivateKey.ToRsaParameterPrivate());
 
-            var serializedPublic = SerializedPublic(pair);
+                var signData = rsa.SignData(
+                    message.ToByteArray(),
+                    HashAlgorithmName.SHA256,
+                    RSASignaturePadding.Pkcs1);
 
-            RsaPrivateCrtKeyParameters privateKey = PrivateKey(serializedPrivate);
-            RsaKeyParameters publicKey = PublicKey(serializedPublic);
+                return signData.ToBase64String();
 
-            var rsa = new RSACryptoServiceProvider(512);
-            var param = DotNetUtilities.ToRSAParameters(privateKey);
-            rsa.ImportParameters(param);
-
-            var signData = rsa.SignData(Encoding.GetBytes(message), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            return signData;
+            }
         }
 
-        public static bool Verify(AsymmetricCipherKeyPair pair, string message, byte[] signature)
+        public bool Verify(string message, string signature, string publicKey)
         {
-            var serializedPrivate = SerializedPrivate(pair);
+            try
+            {
+                using (var rsa = _rsaCryptoServiceProvider)
+                {
+                    rsa.ImportParameters(publicKey.ToRsaParametersPublic());
 
-            var serializedPublic = SerializedPublic(pair);
-
-            RsaPrivateCrtKeyParameters privateKey = PrivateKey(serializedPrivate);
-            RsaKeyParameters publicKey = PublicKey(serializedPublic);
-
-            var rsa = new RSACryptoServiceProvider(512);
-            var param = DotNetUtilities.ToRSAParameters(publicKey);
-            rsa.ImportParameters(param);
-
-            return rsa.VerifyData(Encoding.GetBytes(message), signature, HashAlgorithmName.SHA256,
-                RSASignaturePadding.Pkcs1);
-
+                    return rsa.VerifyData(Encoding.GetBytes(message), signature.BytesFromBase64(), HashAlgorithmName.SHA256,
+                        RSASignaturePadding.Pkcs1);
+                }
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
+    }
 
-        private static RsaKeyParameters PublicKey(string serializedPublic)
-        {
-            return (RsaKeyParameters) PublicKeyFactory.CreateKey(Convert.FromBase64String(serializedPublic));
-        }
+    public static class ConversionExtensions
+    {
+        private static readonly UnicodeEncoding Encoding = new UnicodeEncoding();
 
-        private static RsaPrivateCrtKeyParameters PrivateKey(string serializedPrivate)
-        {
-            return (RsaPrivateCrtKeyParameters) PrivateKeyFactory.CreateKey(Convert.FromBase64String(serializedPrivate));
-        }
+        public static byte[] ToByteArray(this string s) =>
+            Encoding.GetBytes(s);
 
-        private static string SerializedPublic(AsymmetricCipherKeyPair pair)
-        {
-            var publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(pair.Public);
-            var serializedPublicBytes = publicKeyInfo.ToAsn1Object().GetDerEncoded();
-            var serializedPublic = Convert.ToBase64String(serializedPublicBytes);
-            return serializedPublic;
-        }
+        public static RSAParameters ToRsaParametersPublic(this string publicKey) =>
+            DotNetUtilities.ToRSAParameters(publicKey.ToPublicKey());
 
-        private static string SerializedPrivate(AsymmetricCipherKeyPair pair)
+        public static RSAParameters ToRsaParameterPrivate(this string serializedPrivateKey) =>
+            DotNetUtilities.ToRSAParameters(serializedPrivateKey.ToPrivateKey());
+
+        private static RsaKeyParameters ToPublicKey(this string serializedPublic) =>
+            (RsaKeyParameters) PublicKeyFactory.CreateKey(Convert.FromBase64String(serializedPublic));
+
+        private static RsaPrivateCrtKeyParameters ToPrivateKey(this string serializedPrivate) =>
+            (RsaPrivateCrtKeyParameters) PrivateKeyFactory.CreateKey(Convert.FromBase64String(serializedPrivate));
+
+        public static byte[] BytesFromBase64(this string @string) =>
+            Convert.FromBase64String(@string);
+
+        internal static string ToBase64String(this byte[] o) =>
+            Convert.ToBase64String(o);
+
+        private static byte[] Encoded(this Asn1Encodable asn1Encodable) =>
+            asn1Encodable.ToAsn1Object().GetDerEncoded();
+
+        public static string SerializedPrivate(this AsymmetricCipherKeyPair pair) =>
+            PrivateKeyInfoFactory
+                .CreatePrivateKeyInfo(pair.Private)
+                .Encoded()
+                .ToBase64String();
+
+        public static string SerializedPublic(this AsymmetricCipherKeyPair pair) =>
+            SubjectPublicKeyInfoFactory
+                .CreateSubjectPublicKeyInfo(pair.Public)
+                .Encoded()
+                .ToBase64String();
+    }
+
+    public class KeyPair
+    {
+        public string PrivateKey { get; }
+        public string PublicKey { get; }
+
+        public KeyPair(string privateKey, string publicKey)
         {
-            var privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(pair.Private);
-            var serializedPrivateBytes = privateKeyInfo.ToAsn1Object().GetDerEncoded();
-            var serializedPrivate = Convert.ToBase64String(serializedPrivateBytes);
-            return serializedPrivate;
+            PrivateKey = privateKey;
+            PublicKey = publicKey;
         }
     }
 
@@ -94,18 +123,48 @@ namespace NeatCoinTest
     public class EncryptTest
     {
         [Fact]
-        public void should_sign_and_verify_a_message()
+        public void should_sign_and_verify_a_message_with_KeyPair()
         {
             const string message = "message to sign";
 
-            var asymmetricCipherKeyPair = Helper.Generate();
+            var simpleRsa = new SimpleRSA();
+            var pair = simpleRsa.GeneratePair();
 
-            var bytes = Helper.Sign(asymmetricCipherKeyPair, message);
-            var signed = Convert.ToBase64String(bytes);
+            var signed = simpleRsa.Sign(message, pair.PrivateKey);
 
-            var verification = Helper.Verify(asymmetricCipherKeyPair, message, bytes);
+            var verification = simpleRsa.Verify(message, signed, pair.PublicKey);
 
             verification.Should().Be(true);
+        }
+
+        [Fact]
+        public void should_detect_a_fake_signature()
+        {
+            const string message = "message to sign";
+
+            var simpleRsa = new SimpleRSA();
+            var pair = simpleRsa.GeneratePair();
+
+            var signed = "fake signature";
+
+            var verification = simpleRsa.Verify(message, signed, pair.PublicKey);
+
+            verification.Should().Be(false);
+        }
+
+        [Fact]
+        public void should_detect_a_base64_fake_signature()
+        {
+            const string message = "message to sign";
+
+            var simpleRsa = new SimpleRSA();
+            var pair = simpleRsa.GeneratePair();
+
+            var signed = "fake signature".ToByteArray().ToBase64String();
+
+            var verification = simpleRsa.Verify(message, signed, pair.PublicKey);
+
+            verification.Should().Be(false);
         }
     }
 }

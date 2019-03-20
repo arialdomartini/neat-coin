@@ -27,7 +27,7 @@ namespace NeatCoin
 
         private static byte[] SHA256(string @string) =>
             new SHA256Managed()
-                .ComputeHash(@string.ToByteArray());
+                .ComputeHash(@string.ToByteArray2());
 
         public bool HashMatchesDifficulty(int difficulty) =>
             Hash.StartsWithASeriesOf0Repeated(difficulty);
