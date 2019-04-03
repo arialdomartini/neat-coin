@@ -11,6 +11,7 @@ namespace NeatCoin
     {
         public ImmutableList<Transaction> Transactions { get; }
         public string Parent { get; }
+        public bool IsRoot => Parent == null;
 
         private Page(ImmutableList<Transaction> transactions)
         {
@@ -36,20 +37,9 @@ namespace NeatCoin
                         Parent
                     })));
 
-        public int CalculateBalance(string account, Func<Transaction, string> role, ImmutableList<Page> pages)
-        {
-            var balance = Balance(account, role);
-            var children = pages.Where(p => p.Parent == Hash).ToList();
-            var sum = children
-                .Sum(p => p.CalculateBalance(account, role, pages));
-            return balance + sum;
-        }
-
-        private int Balance(string account, Func<Transaction, string> role)
-        {
-            return Transactions.Where(t => role(t) == account)
-                .Sum(t => t.Amount);
-        }
+        public int Balance(string account) =>
+            Transactions.Where(t => t.Receiver == account).Sum(t => t.Amount) -
+            Transactions.Where(t => t.Sender == account).Sum(t => t.Amount);
 
         public string CalculateHash(byte [] bytes)
         {
