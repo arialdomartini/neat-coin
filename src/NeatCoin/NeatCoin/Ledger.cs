@@ -6,11 +6,11 @@ namespace NeatCoin
 {
     public class Ledger
     {
-        private ImmutableList<Transaction> Transactions { get; }
+        private ImmutableList<Page> Pages { get; }
 
-        public Ledger(ImmutableList<Transaction> transactions)
+        public Ledger(ImmutableList<Page> pages)
         {
-            Transactions = transactions;
+            Pages = pages;
         }
 
         public int Balance(string account) =>
@@ -21,6 +21,9 @@ namespace NeatCoin
         private static Func<Transaction, string> AsReceiver() => t => t.Receiver;
 
         private int Balance(string account, Func<Transaction, string> p) =>
-            Transactions.Where(t => p(t) == account).Sum(t => t.Amount);
+            Pages.Sum(page =>
+                page.Transactions
+                    .Where(t => p(t) == account)
+                    .Sum(t => t.Amount));
     }
 }
