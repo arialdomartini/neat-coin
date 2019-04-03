@@ -8,6 +8,7 @@ A didactic crypto-currency based on blockchain, and built in TDD with .NET Core
 * The Ledger can contain more Transactions; the Account Balance takes into account all the Transactions;
 * Transactions are grouped into Pages; each Page contains at least one Transaction;
 * Pages are linked together;
+* Pages have a number; Pages are linked together;
 * Pages are linked through their Hash; Pages with different Transactions or linked to different parent Pages have different Hash values;
 * A Page is valid if its Hash matches the Difficulty (if its Hash begins with a number of 0s equal or greater than the Ledger parameter "Diffuculty");
 * A Ledger is valid if and only if all the contained Pages are valid;
