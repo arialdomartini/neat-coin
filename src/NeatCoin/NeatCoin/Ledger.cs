@@ -1,16 +1,15 @@
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace NeatCoin
 {
     public class Ledger
     {
-        private ImmutableList<Page> Pages { get; }
+        private Page Page { get; }
 
-        public Ledger(ImmutableList<Page> pages)
+        public Ledger(Page page)
         {
-            Pages = pages;
+            Page = page;
         }
 
         public int Balance(string account) =>
@@ -21,7 +20,7 @@ namespace NeatCoin
         private static Func<Transaction, string> AsReceiver() => t => t.Receiver;
 
         private int Balance(string account, Func<Transaction, string> p) =>
-            Pages.Sum(page =>
+            Page.Sum(page =>
                 page.Transactions
                     .Where(t => p(t) == account)
                     .Sum(t => t.Amount));

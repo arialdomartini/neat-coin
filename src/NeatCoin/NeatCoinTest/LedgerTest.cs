@@ -10,48 +10,51 @@ namespace NeatCoinTest
         [Fact]
         public void can_return_sender_s_balance()
         {
-            var page1 = new Page(ImmutableList.Create(
-                new Transaction("sender", "receiver", 1),
-                new Transaction("sender", "receiver", 2)));
+            var page = new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1)))
+                .Append(new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1))))
+                .Append(new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1),
+                    new Transaction("sender", "receiver", 2))));
 
-            var page2 = new Page(ImmutableList.Create(
-                new Transaction("sender", "receiver", 1)));
-
-            var sut = new Ledger(ImmutableList.Create(page1, page2));
+            var sut = new Ledger(page);
 
             var result = sut.Balance("sender");
 
-            result.Should().Be(- (1 + 2 + 1));
+            result.Should().Be(- (1 + 2 + 1 + 1));
         }
 
         [Fact]
         public void can_return_receiver_s_balance()
         {
-            var page1 = new Page(ImmutableList.Create(
-                new Transaction("sender", "receiver", 1),
-                new Transaction("sender", "receiver", 2)));
+            var page = new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1)))
+                .Append(new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1))))
+                .Append(new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1),
+                    new Transaction("sender", "receiver", 2))));
 
-            var page2 = new Page(ImmutableList.Create(
-                new Transaction("sender", "receiver", 1)));
-
-            var sut = new Ledger(ImmutableList.Create(page1, page2));
+            var sut = new Ledger(page);
 
             var result = sut.Balance("receiver");
 
-            result.Should().Be(1 + 2 + 1);
+            result.Should().Be(1 + 1 + 1 + 2);
         }
 
         [Fact]
         public void can_return_an_unknown_account_s_balance()
         {
-            var page1 = new Page(ImmutableList.Create(
-                new Transaction("sender", "receiver", 1),
-                new Transaction("sender", "receiver", 2)));
+            var page = new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1)))
+                .Append(new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1))))
+                .Append(new Page(ImmutableList.Create(
+                    new Transaction("sender", "receiver", 1),
+                    new Transaction("sender", "receiver", 2))));
 
-            var page2 = new Page(ImmutableList.Create(
-                new Transaction("sender", "receiver", 1)));
-
-            var sut = new Ledger(ImmutableList.Create(page1, page2));
+            var sut = new Ledger(page);
 
             var result = sut.Balance("unknown account");
 
