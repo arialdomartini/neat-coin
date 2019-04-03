@@ -11,11 +11,14 @@ namespace NeatCoin
     {
         public ImmutableList<Transaction> Transactions { get; }
         public string Parent { get; }
+        public int Nonce { get; }
+
         public bool IsRoot => Parent == null;
 
-        private Page(ImmutableList<Transaction> transactions)
+        private Page(ImmutableList<Transaction> transactions, int nonce = 0)
         {
             Transactions = transactions;
+            Nonce = nonce;
         }
 
         public Page(params Transaction[] transactions) : this(ImmutableList.Create(transactions)) {}
@@ -34,8 +37,11 @@ namespace NeatCoin
                     new
                     {
                         Transactions,
-                        Parent
+                        Parent,
+                        Nonce
                     })));
+
+        public bool IsValid(int difficulty) => Hash.StartsWith(new string('0', difficulty));
 
         public int Balance(string account) =>
             Transactions.Where(t => t.Receiver == account).Sum(t => t.Amount) -
@@ -48,6 +54,23 @@ namespace NeatCoin
                 var hash = sha1.ComputeHash(bytes);
                 return Convert.ToBase64String(hash);
             }
+        }
+
+        public Page CalculateNonce(int difficulty)
+        {
+            for (var i = 0; i < int.MaxValue; i++)
+            {
+                var page = CloneWithNonce(i);
+                if (page.IsValid(difficulty))
+                    return page;
+            }
+
+            return this;
+        }
+
+        private Page CloneWithNonce(int nonce)
+        {
+            return new Page(Transactions, nonce);
         }
     }
 }
