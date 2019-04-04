@@ -5,10 +5,12 @@ namespace NeatCoin
 {
     public struct Page
     {
+        public int Number { get; }
         public ImmutableList<Transaction> Transactions { get; }
 
-        public Page(params Transaction[] transactions)
+        public Page(int number, params Transaction[] transactions)
         {
+            Number = number;
             Transactions = ImmutableList.Create(transactions);
         }
 

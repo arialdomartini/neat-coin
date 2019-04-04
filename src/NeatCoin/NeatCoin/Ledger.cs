@@ -19,6 +19,8 @@ namespace NeatCoin
 
         public Ledger Append(Page page) => new Ledger(_pages.Add(page));
 
-        public int Balance(string account) => _pages.Sum(p => p.BalanceOf(account));
+        public int Balance(string account) => _pages
+            .IterateFrom(_pages.Single(p => p.Number ==1))
+            .Sum(p => p.BalanceOf(account));
     }
 }
