@@ -11,10 +11,10 @@ namespace NeatCoinTest
         {
             var sut =
                 new Ledger()
-                    .Append(
-                        new Transaction("from", "to", 10));
+                    .Append(new Transaction("A", "B", 10))
+                    .Append(new Transaction("B", "A", 2));
 
-            sut.Balance("from").Should().Be(-10);
+            sut.Balance("A").Should().Be(-8);
         }
 
         [Fact]
@@ -22,10 +22,10 @@ namespace NeatCoinTest
         {
             var sut =
                 new Ledger()
-                    .Append(
-                        new Transaction("from", "to", 10));
+                    .Append(new Transaction("A", "B", 10))
+                    .Append(new Transaction("B", "A", 2));
 
-            sut.Balance("to").Should().Be(10);
+            sut.Balance("B").Should().Be(8);
         }
 
         [Fact]
@@ -33,8 +33,8 @@ namespace NeatCoinTest
         {
             var sut =
                 new Ledger()
-                    .Append(
-                        new Transaction("from", "to", 10));
+                    .Append(new Transaction("A", "B", 10))
+                    .Append(new Transaction("B", "A", 2));
 
             sut.Balance("unknown account").Should().Be(0);
         }
