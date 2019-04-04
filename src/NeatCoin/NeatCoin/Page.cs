@@ -6,7 +6,7 @@ namespace NeatCoin
     public struct Page
     {
         public int Number { get; }
-        public ImmutableList<Transaction> Transactions { get; }
+        private ImmutableList<Transaction> Transactions { get; }
 
         public Page(int number, params Transaction[] transactions)
         {

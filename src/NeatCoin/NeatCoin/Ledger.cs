@@ -5,14 +5,14 @@ namespace NeatCoin
 {
     public class Ledger
     {
-        private readonly ImmutableList<Page> _pages = ImmutableList<Page>.Empty;
+        private readonly Pages _pages;
 
         public Ledger()
         {
-            
+            _pages = new Pages(ImmutableList<Page>.Empty);
         }
 
-        private Ledger(ImmutableList<Page> pages)
+        private Ledger(Pages pages)
         {
             _pages = pages;
         }
@@ -20,7 +20,6 @@ namespace NeatCoin
         public Ledger Append(Page page) => new Ledger(_pages.Add(page));
 
         public int Balance(string account) => _pages
-            .IterateFrom(_pages.Single(p => p.Number ==1))
             .Sum(p => p.BalanceOf(account));
     }
 }
