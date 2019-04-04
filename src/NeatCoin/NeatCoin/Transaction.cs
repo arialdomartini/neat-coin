@@ -12,5 +12,9 @@ namespace NeatCoin
             Receiver = receiver;
             Amount = amount;
         }
+
+        public int BalanceOf(string account) =>
+            (account == Receiver ? Amount : 0) -
+            (account == Sender ? Amount : 0);
     }
 }

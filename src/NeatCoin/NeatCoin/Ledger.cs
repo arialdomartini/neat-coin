@@ -5,22 +5,20 @@ namespace NeatCoin
 {
     public class Ledger
     {
-        private readonly ImmutableList<Transaction> _transactions = ImmutableList<Transaction>.Empty;
+        private readonly ImmutableList<Page> _pages = ImmutableList<Page>.Empty;
 
         public Ledger()
         {
             
         }
 
-        private Ledger(ImmutableList<Transaction> transactions)
+        private Ledger(ImmutableList<Page> pages)
         {
-            _transactions = transactions;
+            _pages = pages;
         }
 
-        public Ledger Append(Transaction transaction) => new Ledger(_transactions.Add(transaction));
+        public Ledger Append(Page page) => new Ledger(_pages.Add(page));
 
-        public int Balance(string account) =>
-            _transactions.Where(t => account == t.Receiver).Sum(t => t.Amount) - 
-            _transactions.Where(t => account == t.Sender).Sum(t => t.Amount);
+        public int Balance(string account) => _pages.Sum(p => p.BalanceOf(account));
     }
 }
