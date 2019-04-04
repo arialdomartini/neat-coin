@@ -6,7 +6,7 @@ namespace NeatCoin
     public class Ledger
     {
         private readonly Pages _pages;
-        private int LastPageNumber => _pages.Any() ? _pages.Max(p => p.Number) : 0;
+        private string LastTransactionHash => _pages.Any() ? _pages.Last().Hash : null;
 
         public Ledger()
         {
@@ -20,11 +20,14 @@ namespace NeatCoin
 
         public Ledger Append(Page page) => new Ledger(Link(page));
 
-        private Pages Link(Page page) =>
-            _pages.Add(
+        private Pages Link(Page page)
+        {
+            var lastTransactionHash = LastTransactionHash;
+            return _pages.Add(
                 new Page(
-                    LastPageNumber + 1,
+                    lastTransactionHash,
                     page.Transactions));
+        }
 
         public int Balance(string account) => _pages
             .Sum(p => p.BalanceOf(account));

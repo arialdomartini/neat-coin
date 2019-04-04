@@ -18,14 +18,17 @@ namespace NeatCoin
 
         public IEnumerator<Page> GetEnumerator()
         {
-            var currentPage = _pages.SingleOrDefault(p => p.Number == 1);
-            while (currentPage.Number != 0)
+            if (!_pages.Any())
+                yield break;
+
+            var currentPage = _pages.SingleOrDefault(p => p.Parent == null);
+            while (!currentPage.Equals(default(Page)))
             {
                 yield return currentPage;
-                var child = _pages.FirstOrDefault(p => p.Number == currentPage.Number + 1);
-                currentPage = child;
-            }
 
+                var singleOrDefault = _pages.SingleOrDefault(p => p.Parent == currentPage.Hash);
+                currentPage = singleOrDefault;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

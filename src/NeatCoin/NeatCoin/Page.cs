@@ -8,24 +8,22 @@ namespace NeatCoin
 {
     public struct Page
     {
-        public int Number { get; }
         public ImmutableList<Transaction> Transactions { get; }
+        public string Parent { get; }
 
         public string Hash =>
             Convert.ToBase64String(
                 Encoding.UTF8.GetBytes(
                     JsonConvert.SerializeObject(
-                        new {Number, Transactions})));
+                        new {Transactions, Parent})));
 
-        public Page(params Transaction[] transactions) : this(0, transactions) {}
-
-        public Page(int number, ImmutableList<Transaction> transactions)
+        public Page(string parent, ImmutableList<Transaction> transactions)
         {
-            Number = number;
+            Parent = parent;
             Transactions = transactions;
         }
 
-        public Page(int number, params Transaction[] transactions) : this(number, ImmutableList.Create(transactions)){}
+        public Page(params Transaction[] transactions) : this("", ImmutableList.Create(transactions)){}
 
         public int BalanceOf(string account) => Transactions.Sum(t => t.BalanceOf(account));
     }

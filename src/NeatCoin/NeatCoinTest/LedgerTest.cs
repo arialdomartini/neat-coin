@@ -23,9 +23,10 @@ namespace NeatCoinTest
             var sut =
                 new Ledger()
                     .Append(new Page(new Transaction("A", "B", 10)))
+                    .Append(new Page(new Transaction("B", "A", 2)))
                     .Append(new Page(new Transaction("B", "A", 2)));
 
-            sut.Balance("B").Should().Be(8);
+            sut.Balance("B").Should().Be(10 - 2 - 2);
         }
 
         [Fact]
