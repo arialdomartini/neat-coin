@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace NeatCoin
 {
@@ -7,6 +10,12 @@ namespace NeatCoin
     {
         public int Number { get; }
         private ImmutableList<Transaction> Transactions { get; }
+
+        public string Hash =>
+            Convert.ToBase64String(
+                Encoding.UTF8.GetBytes(
+                    JsonConvert.SerializeObject(
+                        new {Number, Transactions})));
 
         public Page(int number, params Transaction[] transactions)
         {
