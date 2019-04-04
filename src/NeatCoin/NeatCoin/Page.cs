@@ -45,9 +45,12 @@ namespace NeatCoin
 
         public Page(params Transaction[] transactions) : this("", ImmutableList.Create(transactions)){}
 
+        public Page LinkTo(string lastTransactionHash) => new Page(lastTransactionHash, Transactions);
+
         public int BalanceOf(string account) => Transactions.Sum(t => t.BalanceOf(account));
 
         public bool IsValid(int difficulty) => Hash.StartsWith(new string('0', difficulty));
+
 
         public Page Validate(int difficulty)
         {

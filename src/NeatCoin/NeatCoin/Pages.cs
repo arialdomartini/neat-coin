@@ -5,11 +5,15 @@ using System.Linq;
 
 namespace NeatCoin
 {
-    internal class Pages : IEnumerable<Page>
+    public class Pages : IEnumerable<Page>
     {
         private readonly ImmutableList<Page> _pages;
+        public bool IsValid(int difficulty)
+        {
+            return _pages.TrueForAll(p => p.IsValid(difficulty));
+        }
 
-        internal Pages(ImmutableList<Page> pages)
+        public Pages(ImmutableList<Page> pages)
         {
             _pages = pages;
         }
