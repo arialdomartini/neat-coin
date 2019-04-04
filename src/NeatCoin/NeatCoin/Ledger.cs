@@ -14,6 +14,15 @@ namespace NeatCoin
 
         public Ledger Append(Transaction transaction) => new Ledger(transaction);
 
-        public Transaction Transaction { get; }
+        private Transaction Transaction { get; }
+
+        public int Balance(string account)
+        {
+            if(account == Transaction.Sender)
+                return -Transaction.Amount;
+            if(account == Transaction.Receiver)
+                return Transaction.Amount;
+            return 0;
+        }
     }
 }
