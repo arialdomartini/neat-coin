@@ -12,6 +12,8 @@ A didactic crypto-currency based on blockchain, and built in TDD with .NET Core
 * A Page is valid if its Hash matches the Difficulty (if its Hash begins with a number of 0s equal or greater than the Ledger parameter "Diffuculty");
 * A Ledger is valid if and only if all the contained Pages are valid;
 * A valid Page contains a reward Transaction to a given Account;
+* Pages without a Reward Transaction are not valid;
+* Pages with multiple Reward Transactions are not valid;
 * A Page is valid if and only if it keeps all the Account Balances positive;
 * A Page is valid only if its Transactions are valid; Transactions are always valid;
 * Transactions are signed by their Sender's Private Key, and can be verified by the Sender's Public Key;

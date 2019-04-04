@@ -10,7 +10,7 @@ namespace NeatCoin
         private readonly ImmutableList<Page> _pages;
         public bool IsValid(int difficulty)
         {
-            return _pages.TrueForAll(p => p.IsValid(difficulty));
+            return _pages.TrueForAll(p => p.IsValid(difficulty, 50));
         }
 
         public Pages(ImmutableList<Page> pages)
