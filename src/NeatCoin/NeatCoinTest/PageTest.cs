@@ -21,8 +21,8 @@ namespace NeatCoinTest
         [Fact]
         public void pages_with_different_transactions_should_have_different_hash_values()
         {
-            var page1 = new Page(1, new Transaction("from", "to", 10));
-            var page2 = new Page(1, new Transaction("from", "to", 20));
+            var page1 = new Page(new Transaction("from", "to", 10));
+            var page2 = new Page(new Transaction("from", "to", 20));
 
             var hash1 = page1.Hash;
             var hash2 = page2.Hash;

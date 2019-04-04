@@ -9,7 +9,7 @@ namespace NeatCoin
     public struct Page
     {
         public int Number { get; }
-        private ImmutableList<Transaction> Transactions { get; }
+        public ImmutableList<Transaction> Transactions { get; }
 
         public string Hash =>
             Convert.ToBase64String(
@@ -17,11 +17,15 @@ namespace NeatCoin
                     JsonConvert.SerializeObject(
                         new {Number, Transactions})));
 
-        public Page(int number, params Transaction[] transactions)
+        public Page(params Transaction[] transactions) : this(0, transactions) {}
+
+        public Page(int number, ImmutableList<Transaction> transactions)
         {
             Number = number;
-            Transactions = ImmutableList.Create(transactions);
+            Transactions = transactions;
         }
+
+        public Page(int number, params Transaction[] transactions) : this(number, ImmutableList.Create(transactions)){}
 
         public int BalanceOf(string account) => Transactions.Sum(t => t.BalanceOf(account));
     }
