@@ -1,24 +1,26 @@
+
+
+using System.Collections.Immutable;
+using System.Linq;
+
 namespace NeatCoin
 {
-    public struct Ledger
+    public class Ledger
     {
-        private Ledger(Transaction transaction)
+        public ImmutableList<Transaction> Transactions { get; }
+
+        public Ledger() : this(ImmutableList<Transaction>.Empty) {}
+
+        private Ledger(ImmutableList<Transaction> transactions)
         {
-            Transaction = transaction;
+            Transactions = transactions;
         }
 
         public Ledger Append(Transaction transaction) =>
-            new Ledger(transaction);
+            new Ledger(Transactions.Add(transaction));
 
-        public Transaction Transaction { get; }
-
-        public int BalanceOf(string account)
-        {
-            if (account == Transaction.Receiver)
-                return Transaction.Amount;
-            if (account == Transaction.Sender)
-                return -Transaction.Amount;
-            return 0;
-        }
+        public int BalanceOf(string account) =>
+            Transactions.Where(t => t.Receiver == account).Sum(t => t.Amount) -
+            Transactions.Where(t => t.Sender == account).Sum(t => t.Amount);
     }
 }
