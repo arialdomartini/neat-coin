@@ -1,5 +1,6 @@
 
 
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -7,20 +8,19 @@ namespace NeatCoin
 {
     public class Ledger
     {
-        public ImmutableList<Transaction> Transactions { get; }
+        private readonly ImmutableList<Page> _pages;
 
-        public Ledger() : this(ImmutableList<Transaction>.Empty) {}
+        public Ledger() : this(ImmutableList<Page>.Empty) {}
 
-        private Ledger(ImmutableList<Transaction> transactions)
+        private Ledger(ImmutableList<Page> pages)
         {
-            Transactions = transactions;
+            _pages = pages;
         }
 
-        public Ledger Append(Transaction transaction) =>
-            new Ledger(Transactions.Add(transaction));
+        public Ledger Append(Page page) =>
+            new Ledger(_pages.Add(page));
 
-        public int BalanceOf(string account) =>
-            Transactions.Where(t => t.Receiver == account).Sum(t => t.Amount) -
-            Transactions.Where(t => t.Sender == account).Sum(t => t.Amount);
+        public int BalanceOf(string account) => _pages.Sum(p => p.BalanceOf(account));
+
     }
 }
