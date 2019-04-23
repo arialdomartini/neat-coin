@@ -1,6 +1,3 @@
-
-
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -20,7 +17,17 @@ namespace NeatCoin
         public Ledger Append(Page page) =>
             new Ledger(_pages.Add(page));
 
-        public int BalanceOf(string account) => _pages.Sum(p => p.BalanceOf(account));
+        public int BalanceOf(string account)
+        {
+            var balance = 0;
+            var currentPage = _pages.SingleOrDefault(p => p.IsRoot);
+            while (currentPage != null)
+            {
+                balance += currentPage.BalanceOf(account);
+                currentPage = _pages.SingleOrDefault(p => p.Parent == currentPage.Name);
+            }
 
+            return balance;
+        }
     }
 }
